@@ -1,0 +1,24 @@
+{
+  "name": "mobcash-guide",
+  "version": "1.0.0",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zayno181/Mobcash-Guide.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Zayno181/Mobcash-Guide/issues"
+  },
+  "homepage": "https://github.com/Zayno181/Mobcash-Guide#readme",
+  "description": "",
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.5",
+    "fuse.js": "^7.1.0"
+  }
+}

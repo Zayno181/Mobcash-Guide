@@ -1,0 +1,75 @@
+---
+layout: layout.njk
+title: "Working as an Agent"
+description: "Complete guide for 1xBet agents: transactions, MobCash app, device activation, and limits."
+permalink: /agent-work/index.html
+---
+
+# 1. General information on how to work as an agent
+
+<section>
+    <p>As a master agent, your work primarily involves carrying out transactions with players that you need to find in your area. To perform these transactions, you will need to use the MobCash application, which I will send you to download.</p>
+    <p>By working with players, you will earn profits. Your profit comes from making transactions with a <strong>X% commission on deposits</strong> and <strong>Y% on withdrawals</strong> made with players.</p>
+    <p>You receive your profit on the third day of each month, and if this date falls on a weekend, you will receive the profit on the next business day. The profits will be automatically deposited into your MobCash account on the third day of each month for transactions completed in the previous month.</p>
+</section>
+
+<section>
+    <h2>The MobCash App</h2>
+    <p>The MobCash app is an application used to carry out deposit and withdrawal transactions in players' accounts. After downloading, you will be directed to the login page.</p>
+    <img src="/assets/mobcash-login.png" alt="MobCash login screen" class="guide-image">
+    <p>Log in using your MobCash credentials provided in the first message of the chat. After logging in, the home page will appear, where you can deposit for players and withdraw money to their accounts.</p>
+</section>
+
+<section>
+    <h2>Device Activation</h2>
+    <p>Once you enter the login information correctly, a new window will appear. You must send us a screenshot of this window so that we can activate your account. Each time you use a new device, or whenever this screen appears, send a screenshot.</p>
+    <p><strong>For security purposes, please contact your account manager and provide the following activation code: <code class="copyable">ca49</code></strong></p>
+    <img src="/assets/device-activation.png" alt="Device activation window with code ca49" class="guide-image">
+    <p>Once your account is activated, a window with Deposit and Withdraw options appears.</p>
+    <img src="/assets/deposit-withdraw-buttons.png" alt="MobCash home with Deposit and Withdraw buttons" class="guide-image">
+</section>
+
+<section>
+    <h2>Limit and Balance</h2>
+    <p>The limit and balance are indicators that show the funds currently available in your account and the funds you have already deposited into players' accounts.</p>
+    <ul>
+        <li><strong>Limit:</strong> the amount currently available in your account.</li>
+        <li><strong>Balance:</strong> the total amount that has already been spent on players' deposits.</li>
+    </ul>
+    <p><strong>Example:</strong> When you start working after your first deposit, the limit will equal the amount you deposited. After making the first deposit into a player's account, the limit decreases by the same deposit amount, while the balance increases by the same amount.</p>
+</section>
+
+<section>
+    <h2>How to make a deposit</h2>
+    <ol>
+        <li>Log in to your player account.</li>
+        <li>Click the "Deposit" button and choose your preferred payment method.</li>
+        <li>The deposit amount will be automatically transferred from the player's account to your account.</li>
+        <li>The selected payment method will be saved for future deposits. To change it, contact your account manager.</li>
+        <li>Minimum deposit amount is $15.</li>
+    </ol>
+</section>
+
+<section>
+    <h2>How players make a withdrawal</h2>
+    <ol>
+        <li>The player logs in to their account, selects Withdraw, then clicks Cash Agent.</li>
+        <li>In the City field, they select the city of the withdrawal location; in the Street field, they select the specific site.</li>
+        <li>They create a withdrawal request, and a Confirmation Code appears.</li>
+        <li>They enter the confirmation code in the designated field.</li>
+    </ol>
+    <p><strong>Agent steps:</strong></p>
+    <ol>
+        <li>Select the Withdraw option in MobCash.</li>
+        <li>Enter the Player ID and the confirmation code, then approve. Funds transfer to your MobCash account.</li>
+    </ol>
+</section>
+
+<section>
+    <h2>Important Notes</h2>
+    <ul>
+        <li>If you have another player account on 1xbet, do not perform any transactions using both your MobCash account and that other account – it may get blocked.</li>
+        <li>You are required to find players yourself; we do not provide players for agents.</li>
+        <li>Contact your account manager for more information on finding players.</li>
+    </ul>
+</section>

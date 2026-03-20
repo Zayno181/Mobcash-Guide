@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - 1xBet Agent Guide</title>
+    <meta name="description" content="{{ description or 'Complete guide for 1xBet agents' }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="{{ bodyClass }}">
+    <header>
+        <div class="container">
+            <div class="logo"><a href="/" style="text-decoration: none; color: inherit;">1xBet Agent Guide</a></div>
+            <nav aria-label="Main navigation">
+                <ul>
+                    <li><a href="/" {% if page.url == "/" %}class="active"{% endif %}>Home</a></li>
+                    <li><a href="/agent-work/" {% if page.url == "/agent-work/" %}class="active"{% endif %}>Agent Work</a></li>
+                    <li><a href="/social-media/" {% if page.url == "/social-media/" %}class="active"{% endif %}>Social Media</a></li>
+                    <li><a href="/account-recovery/" {% if page.url == "/account-recovery/" %}class="active"{% endif %}>Reddy Recovery</a></li>
+                    <li><a href="/withdrawals/" {% if page.url == "/withdrawals/" %}class="active"{% endif %}>Withdrawals</a></li>
+                    <li><a href="/autoreserve/" {% if page.url == "/autoreserve/" %}class="active"{% endif %}>Autoreserve</a></li>
+                    <li><a href="/payment-method/" {% if page.url == "/payment-method/" %}class="active"{% endif %}>Payment Method</a></li>
+                    <li><a href="/subagent/" {% if page.url == "/subagent/" %}class="active"{% endif %}>Subagent</a></li>
+                </ul>
+            </nav>
+            <button class="theme-toggle" aria-label="Switch between light and dark mode">🌙</button>
+        </div>
+    </header>
+
+    <main>
+        {% if page.url != "/" %}
+        <div class="container">
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">{{ title }}</span>
+            </nav>
+        </div>
+        {% endif %}
+
+        <div class="container">
+            {{ content | safe }}
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 1xBet Agent Guide. All rights reserved.</p>
+            <a href="#" class="download-link" id="downloadPdfBtn">📥 Download Full PDF</a>
+            <p>Contact: <a href="mailto:manager@partners1xbet.com">manager@partners1xbet.com</a></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+    <script src="/script.js"></script>
+</body>
+</html>
