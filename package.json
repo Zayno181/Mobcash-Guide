@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "main": "script.js",
   "scripts": {
+    "build": "npx @11ty/eleventy",
+    "start": "npx @11ty/eleventy --serve",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,7 +18,7 @@
     "url": "https://github.com/Zayno181/Mobcash-Guide/issues"
   },
   "homepage": "https://github.com/Zayno181/Mobcash-Guide#readme",
-  "description": "",
+  "description": "1xBet Agent Guide - A comprehensive guide for agents.",
   "devDependencies": {
     "@11ty/eleventy": "^3.1.5",
     "fuse.js": "^7.1.0"
