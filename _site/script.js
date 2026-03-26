@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initIntersectionObserver();
     initSmoothScroll();
     initThemeToggle();
+    initPdfDownload();
 });
 
 // Mobile Menu Toggle
@@ -150,6 +151,18 @@ function initSearch() {
             document.body.appendChild(announcement);
             setTimeout(() => announcement.remove(), 1000);
         }
+    }
+}
+
+// PDF Download Handler
+function initPdfDownload() {
+    const downloadBtn = document.getElementById("downloadPdfBtn");
+    if (downloadBtn) {
+        downloadBtn.addEventListener("click", function(e) {
+            e.preventDefault();
+            // Assuming the PDF is generated and available at the root of the site
+            window.open("/Mobcash_Guide.pdf", "_blank");
+        });
     }
 }
 

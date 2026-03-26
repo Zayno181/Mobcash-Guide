@@ -1056,3 +1056,41 @@ footer a:hover {
     font-size: 0.9rem;
     text-align: center;
 }
+
+/* RTL Support */
+body[dir="rtl"] {
+    font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+    text-align: right;
+}
+
+body[dir="rtl"] .logo {
+    flex-direction: row-reverse;
+}
+
+body[dir="rtl"] nav ul {
+    flex-direction: row-reverse;
+}
+
+body[dir="rtl"] .faq-item {
+    border-left: none;
+    border-right: 4px solid var(--primary);
+}
+
+body[dir="rtl"] .glossary dd {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+body[dir="rtl"] .hero-subtitle {
+    text-align: right;
+}
+
+body[dir="rtl"] .search-wrapper .search-icon {
+    left: auto;
+    right: 1rem;
+}
+
+body[dir="rtl"] #searchInput {
+    padding-left: 1rem;
+    padding-right: 3rem;
+}
