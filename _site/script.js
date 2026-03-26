@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initIntersectionObserver();
     initSmoothScroll();
     initThemeToggle();
-    initImageFallbacks();
 });
 
 // Mobile Menu Toggle
@@ -78,9 +77,6 @@ function initSearch() {
     searchIcon.innerHTML = '🔍';
     searchBox.insertBefore(searchIcon, searchInput);
 
-    // Adjust input padding to account for icon
-    searchInput.style.paddingLeft = '3.5rem';
-
     // Create clear button
     const clearBtn = document.createElement('button');
     clearBtn.className = 'search-clear';
@@ -141,6 +137,18 @@ function initSearch() {
         // Show/hide no results message
         if (cardsContainer) {
             noResults.classList.toggle('visible', visibleCount === 0 && query.length > 0);
+        }
+        
+        // Announce search results to screen readers
+        if (query.length > 0) {
+            const message = visibleCount === 0 ? 'No results found' : `Found ${visibleCount} result${visibleCount !== 1 ? 's' : ''}`;
+            const announcement = document.createElement('div');
+            announcement.setAttribute('role', 'status');
+            announcement.setAttribute('aria-live', 'polite');
+            announcement.className = 'sr-only';
+            announcement.textContent = message;
+            document.body.appendChild(announcement);
+            setTimeout(() => announcement.remove(), 1000);
         }
     }
 }
@@ -318,21 +326,6 @@ function initThemeToggle() {
     });
 }
 
-// Handle missing guide images gracefully
-function initImageFallbacks() {
-    const guideImages = document.querySelectorAll('.guide-image');
-    guideImages.forEach(img => {
-        img.addEventListener('error', function() {
-            const placeholder = document.createElement('div');
-            placeholder.className = 'image-placeholder';
-            placeholder.setAttribute('role', 'img');
-            placeholder.setAttribute('aria-label', this.alt || 'Screenshot placeholder');
-            placeholder.innerHTML = `<span style="display:block;font-size:0.95rem;color:var(--text-muted);font-style:italic;">${this.alt || 'Screenshot coming soon'}</span>`;
-            this.parentNode.replaceChild(placeholder, this);
-        });
-    });
-}
-
 // Utility: Throttle function (not used but kept for completeness)
 function throttle(func, limit) {
     let inThrottle;
@@ -353,22 +346,6 @@ function debounce(func, wait) {
         timeout = setTimeout(() => func.apply(this, args), wait);
     };
 }
-
-// Handle PDF download button - show a tooltip since no PDF is available yet
-document.addEventListener('click', function(e) {
-    if (e.target && e.target.id === 'downloadPdfBtn') {
-        e.preventDefault();
-        // Show a brief notification that PDF is coming soon
-        const btn = e.target;
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '⏳ PDF coming soon...';
-        btn.style.opacity = '0.7';
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.style.opacity = '';
-        }, 2000);
-    }
-});
 
 // Handle visibility change (pause animations when tab is hidden)
 document.addEventListener('visibilitychange', function() {
