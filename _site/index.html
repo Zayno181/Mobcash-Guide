@@ -10,29 +10,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="home-page" >
+<body class="home-page">
     <header>
         <div class="container">
             <div class="logo">
                 <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                    <img src="/assets/logo_new.png" alt="MobCash Guide Logo" style="height: 40px; width: auto;">
-                    <span>MobCash Guide</span>
+                    <img src="/assets/logo_final.png" alt="MobCash Guide Logo" style="height: 40px; width: auto;">
+                    <span data-t="site_title">MobCash Guide</span>
                 </a>
             </div>
             <nav aria-label="Main navigation">
                 <ul>
-                    <li><a href="/" class="active">Home</a></li>
-                    <li><a href="/ar/" >العربية</a></li>
-                    <li><a href="/agent-work/" >Agent Work</a></li>
-                    <li><a href="/social-media/" >Social Media</a></li>
-                    <li><a href="/account-recovery/" >Reddy Recovery</a></li>
-                    <li><a href="/withdrawals/" >Withdrawals</a></li>
-                    <li><a href="/autoreserve/" >Autoreserve</a></li>
-                    <li><a href="/payment-method/" >Payment Method</a></li>
-                    <li><a href="/subagent/" >Subagent</a></li>
+                    <li><a href="/" class="active" data-t="nav_home">Home</a></li>
+                    <li><a href="/agent-work/"  data-t="nav_agent_work">Agent Work</a></li>
+                    <li><a href="/social-media/"  data-t="nav_social_media">Social Media</a></li>
+                    <li><a href="/account-recovery/"  data-t="nav_account_recovery">Reddy Recovery</a></li>
+                    <li><a href="/withdrawals/"  data-t="nav_withdrawals">Withdrawals</a></li>
+                    <li><a href="/autoreserve/"  data-t="nav_autoreserve">Autoreserve</a></li>
+                    <li><a href="/payment-method/"  data-t="nav_payment_method">Payment Method</a></li>
+                    <li><a href="/subagent/"  data-t="nav_subagent">Subagent</a></li>
                 </ul>
             </nav>
-            <button class="theme-toggle" aria-label="Switch between light and dark mode">🌙</button>
+            <div class="header-controls">
+                <button class="lang-toggle" id="langToggle" aria-label="Switch Language">AR</button>
+                <button class="theme-toggle" aria-label="Switch between light and dark mode">🌙</button>
+            </div>
         </div>
     </header>
 
@@ -42,8 +44,8 @@
         <div class="container">
             <section class="hero">
     <div class="container">
-        <h1>General Guide for 1xBet Agents</h1>
-        <p class="hero-subtitle">Your complete resource for managing players, transactions, and growing your business.</p>
+        <h1 data-t="hero_title">General Guide for 1xBet Agents</h1>
+        <p class="hero-subtitle" data-t="hero_subtitle">Your complete resource for managing players, transactions, and growing your business.</p>
         <div class="search-box search-wrapper">
             <input type="text" id="searchInput" placeholder="Search topics (e.g., deposit, subagent)..." aria-label="Search pages">
             <div id="searchResults" class="search-results-dropdown"></div>
@@ -53,42 +55,42 @@
 <section class="cards-grid container" id="cardsContainer">
     <div class="card" data-title="Working as an Agent">
         <div class="card-icon">💼</div>
-        <h2><a href="/agent-work/">Working as an Agent</a></h2>
+        <h2><a href="/agent-work/" data-t="nav_agent_work">Working as an Agent</a></h2>
         <p>MobCash app, deposits, withdrawals, profits, device activation, limits.</p>
     </div>
     <div class="card" data-title="Social Media Strategies">
         <div class="card-icon">📱</div>
-        <h2><a href="/social-media/">Social Media Strategies</a></h2>
+        <h2><a href="/social-media/" data-t="nav_social_media">Social Media Strategies</a></h2>
         <p>Use Facebook, Instagram, Telegram to attract players and build trust.</p>
     </div>
     <div class="card" data-title="Reddy Account Recovery">
         <div class="card-icon">🔐</div>
-        <h2><a href="/account-recovery/">Reddy Account Recovery</a></h2>
+        <h2><a href="/account-recovery/" data-t="nav_account_recovery">Reddy Account Recovery</a></h2>
         <p>Program closure policy (15 days), how to reopen, verification.</p>
     </div>
     <div class="card" data-title="Withdrawal Issues">
         <div class="card-icon">💸</div>
-        <h2><a href="/withdrawals/">Withdrawal Issues</a></h2>
+        <h2><a href="/withdrawals/" data-t="nav_withdrawals">Withdrawal Issues</a></h2>
         <p>What if agent has insufficient EPOS balance? Two solutions.</p>
     </div>
     <div class="card" data-title="Autoreserve Setup">
         <div class="card-icon">⚙️</div>
-        <h2><a href="/autoreserve/">Autoreserve Setup</a></h2>
+        <h2><a href="/autoreserve/" data-t="nav_autoreserve">Autoreserve Setup</a></h2>
         <p>Steps to set up automatic fund transfers, confirmation messages.</p>
     </div>
     <div class="card" data-title="Changing Payment Method">
         <div class="card-icon">💳</div>
-        <h2><a href="/payment-method/">Changing Payment Method</a></h2>
+        <h2><a href="/payment-method/" data-t="nav_payment_method">Changing Payment Method</a></h2>
         <p>Contact manager, commission averaging, confirmation.</p>
     </div>
     <div class="card" data-title="Adding a Subagent">
         <div class="card-icon">👥</div>
-        <h2><a href="/subagent/">Adding a Subagent</a></h2>
+        <h2><a href="/subagent/" data-t="nav_subagent">Adding a Subagent</a></h2>
         <p>Find, pay $50, fill form, commissions, web management.</p>
     </div>
 </section>
 <section class="faq container">
-    <h2>Frequently Asked Questions (FAQ)</h2>
+    <h2 data-t="faq_title">Frequently Asked Questions (FAQ)</h2>
     <div class="faq-item">
         <h3>How do I become a 1xBet agent?</h3>
         <p>To become an agent, you need to contact a manager, provide the necessary documentation, and meet the initial requirements for player management.</p>
@@ -99,7 +101,7 @@
     </div>
 </section>
 <section class="glossary container">
-    <h2>Glossary of Terms</h2>
+    <h2 data-t="glossary_title">Glossary of Terms</h2>
     <dl>
         <dt>MobCash</dt>
         <dd>The official application used by 1xBet agents to manage player deposits and withdrawals.</dd>

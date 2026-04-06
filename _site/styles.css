@@ -1094,3 +1094,67 @@ body[dir="rtl"] #searchInput {
     padding-left: 1rem;
     padding-right: 3rem;
 }
+
+/* Language Toggle Styles */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.lang-toggle {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.lang-toggle:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+body.dark-theme .lang-toggle {
+    background: var(--primary-light);
+    color: var(--bg-dark);
+}
+
+/* RTL Specific Adjustments */
+body.rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+body.rtl .logo {
+    flex-direction: row-reverse;
+}
+
+body.rtl nav ul {
+    flex-direction: row-reverse;
+}
+
+body.rtl .header-controls {
+    flex-direction: row-reverse;
+}
+
+body.rtl .search-icon {
+    left: auto;
+    right: 1rem;
+}
+
+body.rtl #searchInput {
+    padding-left: 1rem;
+    padding-right: 3rem;
+}
+
+body.rtl .card-icon {
+    margin-right: 0;
+    margin-left: 1rem;
+}

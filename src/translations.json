@@ -1,0 +1,38 @@
+{
+  "en": {
+    "site_title": "MobCash Guide",
+    "hero_title": "General Guide for 1xBet Agents",
+    "hero_subtitle": "Your complete resource for managing players, transactions, and growing your business.",
+    "search_placeholder": "Search topics (e.g., deposit, subagent)...",
+    "nav_home": "Home",
+    "nav_agent_work": "Agent Work",
+    "nav_social_media": "Social Media",
+    "nav_account_recovery": "Reddy Recovery",
+    "nav_withdrawals": "Withdrawals",
+    "nav_autoreserve": "Autoreserve",
+    "nav_payment_method": "Payment Method",
+    "nav_subagent": "Subagent",
+    "faq_title": "Frequently Asked Questions (FAQ)",
+    "glossary_title": "Glossary of Terms",
+    "footer_copy": "© 2025 1xBet Agent Guide. All rights reserved.",
+    "download_pdf": "📥 Download Full PDF"
+  },
+  "ar": {
+    "site_title": "دليل MobCash",
+    "hero_title": "دليل عام للوكلاء",
+    "hero_subtitle": "موردك الكامل لإدارة اللاعبين والمعاملات وتنمية عملك.",
+    "search_placeholder": "ابحث عن المواضيع (مثل الإيداع، وكيل فرعي)...",
+    "nav_home": "الرئيسية",
+    "nav_agent_work": "عمل الوكيل",
+    "nav_social_media": "وسائل التواصل",
+    "nav_account_recovery": "استعادة ريدي",
+    "nav_withdrawals": "السحوبات",
+    "nav_autoreserve": "الاحتياطي التلقائي",
+    "nav_payment_method": "طريقة الدفع",
+    "nav_subagent": "وكيل فرعي",
+    "faq_title": "الأسئلة الشائعة (FAQ)",
+    "glossary_title": "قاموس المصطلحات",
+    "footer_copy": "© 2025 دليل وكلاء 1xBet. جميع الحقوق محفوظة.",
+    "download_pdf": "📥 تحميل ملف PDF الكامل"
+  }
+}

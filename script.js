@@ -1,6 +1,7 @@
-// Modern JavaScript with enhanced UX features
+// Modern JavaScript with enhanced UX features and Multi-language support
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize all components
+    initLanguageToggle();
     initMobileMenu();
     initSearch();
     initActiveNavigation();
@@ -12,6 +13,77 @@ document.addEventListener('DOMContentLoaded', function() {
     initThemeToggle();
     initPdfDownload();
 });
+
+// Language Toggle and Translation Logic
+function initLanguageToggle() {
+    const langToggle = document.getElementById('langToggle');
+    if (!langToggle) return;
+
+    // Load translations
+    fetch('/translations.json')
+        .then(response => response.json())
+        .then(translations => {
+            window.siteTranslations = translations;
+            
+            // Get saved language or default to English
+            const savedLang = localStorage.getItem('language') || 'en';
+            applyLanguage(savedLang);
+
+            langToggle.addEventListener('click', () => {
+                const currentLang = document.documentElement.lang || 'en';
+                const newLang = currentLang === 'en' ? 'ar' : 'en';
+                applyLanguage(newLang);
+            });
+        })
+        .catch(err => console.error('Error loading translations:', err));
+}
+
+function applyLanguage(lang) {
+    const translations = window.siteTranslations;
+    if (!translations || !translations[lang]) return;
+
+    const t = translations[lang];
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    localStorage.setItem('language', lang);
+
+    // Update toggle button text
+    const langToggle = document.getElementById('langToggle');
+    if (langToggle) {
+        langToggle.textContent = lang === 'en' ? 'AR' : 'EN';
+    }
+
+    // Update all elements with data-t attribute
+    document.querySelectorAll('[data-t]').forEach(el => {
+        const key = el.getAttribute('data-t');
+        if (t[key]) {
+            if (el.tagName === 'INPUT' && el.placeholder) {
+                el.placeholder = t[key];
+            } else {
+                el.textContent = t[key];
+            }
+        }
+    });
+
+    // Update search placeholder specifically if it exists
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput && t.search_placeholder) {
+        searchInput.placeholder = t.search_placeholder;
+    }
+
+    // Update body class for RTL specific styling
+    if (lang === 'ar') {
+        document.body.classList.add('rtl');
+    } else {
+        document.body.classList.remove('rtl');
+    }
+
+    // Update PDF download button text
+    const downloadBtn = document.getElementById('downloadPdfBtn');
+    if (downloadBtn && t.download_pdf) {
+        downloadBtn.textContent = t.download_pdf;
+    }
+}
 
 // Mobile Menu Toggle
 function initMobileMenu() {
@@ -90,8 +162,8 @@ function initSearch() {
     noResults.className = 'no-results';
     noResults.innerHTML = `
         <div class="no-results-icon">🔍</div>
-        <h3>No results found</h3>
-        <p>Try adjusting your search terms</p>
+        <h3 data-t="no_results_title">No results found</h3>
+        <p data-t="no_results_subtitle">Try adjusting your search terms</p>
     `;
     if (cardsContainer) {
         cardsContainer.after(noResults);
@@ -142,7 +214,11 @@ function initSearch() {
         
         // Announce search results to screen readers
         if (query.length > 0) {
-            const message = visibleCount === 0 ? 'No results found' : `Found ${visibleCount} result${visibleCount !== 1 ? 's' : ''}`;
+            const lang = document.documentElement.lang || 'en';
+            const message = lang === 'ar' 
+                ? (visibleCount === 0 ? 'لم يتم العثور على نتائج' : `تم العثور على ${visibleCount} نتيجة`)
+                : (visibleCount === 0 ? 'No results found' : `Found ${visibleCount} result${visibleCount !== 1 ? 's' : ''}`);
+            
             const announcement = document.createElement('div');
             announcement.setAttribute('role', 'status');
             announcement.setAttribute('aria-live', 'polite');
@@ -160,7 +236,6 @@ function initPdfDownload() {
     if (downloadBtn) {
         downloadBtn.addEventListener("click", function(e) {
             e.preventDefault();
-            // Assuming the PDF is generated and available at the root of the site
             window.open("/Mobcash_Guide.pdf", "_blank");
         });
     }
@@ -246,7 +321,6 @@ function initReadingProgress() {
 function initIntersectionObserver() {
     const sections = document.querySelectorAll('section, h2, h3');
     
-    // Helper to check if element is visible in viewport
     function isElementInViewport(el) {
         const rect = el.getBoundingClientRect();
         return (
@@ -255,14 +329,12 @@ function initIntersectionObserver() {
         );
     }
     
-    // Mark currently visible sections immediately
     sections.forEach(section => {
         if (isElementInViewport(section)) {
             section.classList.add('visible');
         }
     });
     
-    // Set up observer for the rest (dynamic scrolling)
     const observerOptions = {
         root: null,
         rootMargin: '0px',
@@ -279,7 +351,6 @@ function initIntersectionObserver() {
     }, observerOptions);
     
     sections.forEach(section => {
-        // Only observe sections that aren't already visible
         if (!section.classList.contains('visible')) {
             observer.observe(section);
         }
@@ -310,7 +381,6 @@ function initThemeToggle() {
     const toggleButton = document.querySelector('.theme-toggle');
     if (!toggleButton) return;
 
-    // Load saved theme or fallback to system preference
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
         document.body.classList.add('dark-theme');
@@ -319,7 +389,6 @@ function initThemeToggle() {
         document.body.classList.remove('dark-theme');
         toggleButton.textContent = '🌙';
     } else {
-        // Respect system preference
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             document.body.classList.add('dark-theme');
             toggleButton.textContent = '☀️';
@@ -339,28 +408,7 @@ function initThemeToggle() {
     });
 }
 
-// Utility: Throttle function (not used but kept for completeness)
-function throttle(func, limit) {
-    let inThrottle;
-    return function(...args) {
-        if (!inThrottle) {
-            func.apply(this, args);
-            inThrottle = true;
-            setTimeout(() => inThrottle = false, limit);
-        }
-    };
-}
-
-// Utility: Debounce function (not used but kept for completeness)
-function debounce(func, wait) {
-    let timeout;
-    return function(...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-}
-
-// Handle visibility change (pause animations when tab is hidden)
+// Handle visibility change
 document.addEventListener('visibilitychange', function() {
     if (document.hidden) {
         document.body.classList.add('tab-hidden');

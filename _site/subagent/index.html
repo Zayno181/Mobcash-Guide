@@ -10,29 +10,31 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/styles.css">
 </head>
-<body class="" >
+<body class="">
     <header>
         <div class="container">
             <div class="logo">
                 <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 10px;">
-                    <img src="/assets/logo_new.png" alt="MobCash Guide Logo" style="height: 40px; width: auto;">
-                    <span>MobCash Guide</span>
+                    <img src="/assets/logo_final.png" alt="MobCash Guide Logo" style="height: 40px; width: auto;">
+                    <span data-t="site_title">MobCash Guide</span>
                 </a>
             </div>
             <nav aria-label="Main navigation">
                 <ul>
-                    <li><a href="/" >Home</a></li>
-                    <li><a href="/ar/" >العربية</a></li>
-                    <li><a href="/agent-work/" >Agent Work</a></li>
-                    <li><a href="/social-media/" >Social Media</a></li>
-                    <li><a href="/account-recovery/" >Reddy Recovery</a></li>
-                    <li><a href="/withdrawals/" >Withdrawals</a></li>
-                    <li><a href="/autoreserve/" >Autoreserve</a></li>
-                    <li><a href="/payment-method/" >Payment Method</a></li>
-                    <li><a href="/subagent/" class="active">Subagent</a></li>
+                    <li><a href="/"  data-t="nav_home">Home</a></li>
+                    <li><a href="/agent-work/"  data-t="nav_agent_work">Agent Work</a></li>
+                    <li><a href="/social-media/"  data-t="nav_social_media">Social Media</a></li>
+                    <li><a href="/account-recovery/"  data-t="nav_account_recovery">Reddy Recovery</a></li>
+                    <li><a href="/withdrawals/"  data-t="nav_withdrawals">Withdrawals</a></li>
+                    <li><a href="/autoreserve/"  data-t="nav_autoreserve">Autoreserve</a></li>
+                    <li><a href="/payment-method/"  data-t="nav_payment_method">Payment Method</a></li>
+                    <li><a href="/subagent/" class="active" data-t="nav_subagent">Subagent</a></li>
                 </ul>
             </nav>
-            <button class="theme-toggle" aria-label="Switch between light and dark mode">🌙</button>
+            <div class="header-controls">
+                <button class="lang-toggle" id="langToggle" aria-label="Switch Language">AR</button>
+                <button class="theme-toggle" aria-label="Switch between light and dark mode">🌙</button>
+            </div>
         </div>
     </header>
 
