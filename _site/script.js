@@ -1,48 +1,52 @@
 // Modern JavaScript with enhanced UX features and Multi-language support
+let siteTranslations = {};
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all components
-    initLanguageToggle();
-    initMobileMenu();
-    initSearch();
-    initActiveNavigation();
-    initScrollEffects();
-    initBackToTop();
-    initReadingProgress();
-    initIntersectionObserver();
-    initSmoothScroll();
-    initThemeToggle();
-    initPdfDownload();
+    // Load translations first, then initialize all components
+    loadTranslations().then(() => {
+        initLanguageToggle();
+        initMobileMenu();
+        initSearch();
+        initActiveNavigation();
+        initScrollEffects();
+        initBackToTop();
+        initReadingProgress();
+        initIntersectionObserver();
+        initSmoothScroll();
+        initThemeToggle();
+        initPdfDownload();
+    });
 });
+
+// Load translations from JSON file
+function loadTranslations() {
+    return fetch('/translations.json')
+        .then(response => response.json())
+        .then(data => {
+            siteTranslations = data;
+            // Apply saved language on page load
+            const savedLang = localStorage.getItem('language') || 'en';
+            applyLanguage(savedLang);
+        })
+        .catch(err => console.error('Error loading translations:', err));
+}
 
 // Language Toggle and Translation Logic
 function initLanguageToggle() {
     const langToggle = document.getElementById('langToggle');
     if (!langToggle) return;
 
-    // Load translations
-    fetch('/translations.json')
-        .then(response => response.json())
-        .then(translations => {
-            window.siteTranslations = translations;
-            
-            // Get saved language or default to English
-            const savedLang = localStorage.getItem('language') || 'en';
-            applyLanguage(savedLang);
-
-            langToggle.addEventListener('click', () => {
-                const currentLang = document.documentElement.lang || 'en';
-                const newLang = currentLang === 'en' ? 'ar' : 'en';
-                applyLanguage(newLang);
-            });
-        })
-        .catch(err => console.error('Error loading translations:', err));
+    langToggle.addEventListener('click', () => {
+        const currentLang = document.documentElement.lang || 'en';
+        const newLang = currentLang === 'en' ? 'ar' : 'en';
+        applyLanguage(newLang);
+    });
 }
 
 function applyLanguage(lang) {
-    const translations = window.siteTranslations;
-    if (!translations || !translations[lang]) return;
+    if (!siteTranslations[lang]) return;
 
-    const t = translations[lang];
+    const t = siteTranslations[lang];
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     localStorage.setItem('language', lang);
@@ -57,7 +61,7 @@ function applyLanguage(lang) {
     document.querySelectorAll('[data-t]').forEach(el => {
         const key = el.getAttribute('data-t');
         if (t[key]) {
-            if (el.tagName === 'INPUT' && el.placeholder) {
+            if (el.tagName === 'INPUT' && el.type === 'text') {
                 el.placeholder = t[key];
             } else {
                 el.textContent = t[key];
@@ -72,11 +76,7 @@ function applyLanguage(lang) {
     }
 
     // Update body class for RTL specific styling
-    if (lang === 'ar') {
-        document.body.classList.add('rtl');
-    } else {
-        document.body.classList.remove('rtl');
-    }
+    document.body.classList.toggle('rtl', lang === 'ar');
 
     // Update PDF download button text
     const downloadBtn = document.getElementById('downloadPdfBtn');
@@ -162,8 +162,8 @@ function initSearch() {
     noResults.className = 'no-results';
     noResults.innerHTML = `
         <div class="no-results-icon">🔍</div>
-        <h3 data-t="no_results_title">No results found</h3>
-        <p data-t="no_results_subtitle">Try adjusting your search terms</p>
+        <h3>No results found</h3>
+        <p>Try adjusting your search terms</p>
     `;
     if (cardsContainer) {
         cardsContainer.after(noResults);
