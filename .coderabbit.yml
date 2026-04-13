@@ -1,0 +1,32 @@
+# .coderabbit.yml
+version: 2
+
+reviews:
+  enabled: true
+  path_filters:
+    - "!**/node_modules/**"      # Ignore dependencies
+    - "!**/*.lock"               # Ignore lock files
+    - "!dist/**"                 # Ignore build output
+    - "!docs/**"                 # Ignore documentation
+  
+  path_instructions:
+    - path: "src/**/*.js"
+      instructions: |
+        - Check for proper error handling
+        - Ensure async/await is used correctly
+        - Verify no console.log statements left in production code
+    
+    - path: "**/*.css"
+      instructions: |
+        - Check for responsive design best practices
+        - Ensure no unused CSS classes
+
+  disable_review_labels:
+    - "skip-review"              # Add this label to skip AI review
+    - "wip"
+
+summaries:
+  enabled: true
+
+chat:
+  enabled: true
