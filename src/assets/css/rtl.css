@@ -1,0 +1,119 @@
+/* RTL (Right-to-Left) Support - Consolidated Rules */
+
+:root {
+    --font-arabic: 'Inter', 'Noto Sans Arabic', sans-serif;
+}
+
+/* Unified RTL selector using both dir attribute and class */
+[dir="rtl"], body.rtl {
+    direction: rtl;
+    text-align: right;
+    font-family: var(--font-arabic);
+}
+
+[dir="rtl"] .logo,
+body.rtl .logo {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] nav ul,
+body.rtl nav ul {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .header-controls,
+body.rtl .header-controls {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .faq-item {
+    border-left: none;
+    border-right: 4px solid var(--primary);
+}
+
+[dir="rtl"] .glossary dd {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+[dir="rtl"] .hero-subtitle {
+    text-align: right;
+}
+
+[dir="rtl"] .search-wrapper .search-icon,
+body.rtl .search-icon {
+    left: auto;
+    right: 1rem;
+}
+
+[dir="rtl"] #searchInput,
+body.rtl #searchInput {
+    padding-left: 1rem;
+    padding-right: 3rem;
+}
+
+[dir="rtl"] .card-icon,
+body.rtl .card-icon {
+    margin-right: 0;
+    margin-left: 1rem;
+}
+
+[dir="rtl"] h2,
+body.rtl h2 {
+    padding-left: 0;
+    padding-right: 1rem;
+    border-left: none;
+    border-right: 4px solid var(--primary);
+}
+
+[dir="rtl"] .message-example,
+body.rtl .message-example {
+    border-left: none;
+    border-right: 4px solid var(--secondary);
+}
+
+[dir="rtl"] .message-example::before,
+body.rtl .message-example::before {
+    right: auto;
+    left: 1rem;
+}
+
+[dir="rtl"] .breadcrumb,
+body.rtl .breadcrumb {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] ul, 
+[dir="rtl"] ol,
+body.rtl ul,
+body.rtl ol {
+    padding-left: 0;
+    padding-right: 1.5rem;
+}
+
+[dir="rtl"] .back-to-top,
+body.rtl .back-to-top {
+    left: 2rem;
+    right: auto;
+}
+
+@media (max-width: 768px) {
+    [dir="rtl"] .back-to-top,
+    body.rtl .back-to-top {
+        left: 1rem;
+        right: auto;
+    }
+
+    [dir="rtl"] nav ul li a,
+    body.rtl nav ul li a {
+        border-left: none;
+        border-right: 3px solid transparent;
+    }
+
+    [dir="rtl"] nav ul li a:hover,
+    [dir="rtl"] nav ul li a.active,
+    body.rtl nav ul li a:hover,
+    body.rtl nav ul li a.active {
+        border-right-color: var(--primary);
+    }
+}

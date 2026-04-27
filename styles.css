@@ -1058,50 +1058,66 @@ footer a:hover {
 }
 
 /* RTL Support */
-body[dir="rtl"] {
-    font-family: 'Inter', 'Noto Sans Arabic', sans-serif;
+/* RTL (Right-to-Left) Support - Consolidated Rules */
+:root {
+    --font-arabic: 'Inter', 'Noto Sans Arabic', sans-serif;
+}
+
+/* Unified RTL selector using both dir attribute and class */
+[dir="rtl"], body.rtl {
+    direction: rtl;
     text-align: right;
+    font-family: var(--font-arabic);
 }
 
-body[dir="rtl"] .logo {
+[dir="rtl"] .logo,
+body.rtl .logo {
     flex-direction: row-reverse;
 }
 
-body[dir="rtl"] nav ul {
+[dir="rtl"] nav ul,
+body.rtl nav ul {
     flex-direction: row-reverse;
 }
 
-body[dir="rtl"] .faq-item {
+[dir="rtl"] .header-controls,
+body.rtl .header-controls {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .faq-item {
     border-left: none;
     border-right: 4px solid var(--primary);
 }
 
-body[dir="rtl"] .glossary dd {
+[dir="rtl"] .glossary dd {
     padding-left: 0;
     padding-right: 0;
 }
 
-body[dir="rtl"] .hero-subtitle {
+[dir="rtl"] .hero-subtitle {
     text-align: right;
 }
 
-body[dir="rtl"] .search-wrapper .search-icon {
+[dir="rtl"] .search-wrapper .search-icon,
+body.rtl .search-icon {
     left: auto;
     right: 1rem;
 }
 
-body[dir="rtl"] #searchInput {
+[dir="rtl"] #searchInput,
+body.rtl #searchInput {
     padding-left: 1rem;
     padding-right: 3rem;
 }
 
-/* Language Toggle Styles */
-.header-controls {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+[dir="rtl"] .card-icon,
+body.rtl .card-icon {
+    margin-right: 0;
+    margin-left: 1rem;
 }
 
+/* Language Toggle Button Styles */
 .lang-toggle {
     background: var(--primary);
     color: white;
@@ -1111,50 +1127,17 @@ body[dir="rtl"] #searchInput {
     cursor: pointer;
     font-weight: 600;
     font-size: 0.85rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all var(--transition-normal);
+    box-shadow: var(--shadow-sm);
 }
 
 .lang-toggle:hover {
     background: var(--primary-dark);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow-md);
 }
 
 body.dark-theme .lang-toggle {
     background: var(--primary-light);
-    color: var(--bg-dark);
-}
-
-/* RTL Specific Adjustments */
-body.rtl {
-    direction: rtl;
-    text-align: right;
-}
-
-body.rtl .logo {
-    flex-direction: row-reverse;
-}
-
-body.rtl nav ul {
-    flex-direction: row-reverse;
-}
-
-body.rtl .header-controls {
-    flex-direction: row-reverse;
-}
-
-body.rtl .search-icon {
-    left: auto;
-    right: 1rem;
-}
-
-body.rtl #searchInput {
-    padding-left: 1rem;
-    padding-right: 3rem;
-}
-
-body.rtl .card-icon {
-    margin-right: 0;
-    margin-left: 1rem;
+    color: var(--bg-primary);
 }

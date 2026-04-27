@@ -1,199 +1,256 @@
 // Modern JavaScript with enhanced UX features and Multi-language support
-let siteTranslations = {};
+'use strict';
+
+// Application state
+const AppState = {
+    translations: {},
+    currentLanguage: 'en'
+};
+
+// Utility functions
+const Utils = {
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    },
+
+    getElement(selector) {
+        return document.querySelector(selector);
+    },
+
+    getElements(selector) {
+        return document.querySelectorAll(selector);
+    }
+};
 
 document.addEventListener('DOMContentLoaded', function() {
     // Load translations first, then initialize all components
-    loadTranslations().then(() => {
-        initLanguageToggle();
-        initMobileMenu();
-        initSearch();
-        initActiveNavigation();
-        initScrollEffects();
-        initBackToTop();
-        initReadingProgress();
-        initIntersectionObserver();
-        initSmoothScroll();
-        initThemeToggle();
-        initPdfDownload();
-    });
+    loadTranslations()
+        .then(() => {
+            initializeApp();
+        })
+        .catch(error => {
+            ErrorHandler.log(error, 'initialization');
+            // Initialize app even if translations fail
+            initializeApp();
+        });
 });
 
 // Load translations from JSON file
-function loadTranslations() {
-    return fetch('/translations.json')
-        .then(response => response.json())
-        .then(data => {
-            siteTranslations = data;
-            // Apply saved language on page load
-            const savedLang = localStorage.getItem('language') || 'en';
-            applyLanguage(savedLang);
-        })
-        .catch(err => console.error('Error loading translations:', err));
+async function loadTranslations() {
+    try {
+        const response = await fetch('/translations.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        AppState.translations = await response.json();
+        
+        // Apply saved language on page load
+        const savedLang = localStorage.getItem('language') || 'en';
+        applyLanguage(savedLang);
+    } catch (err) {
+        ErrorHandler.log(err, 'loadTranslations');
+        // Fallback to English if translations fail to load
+        AppState.translations = { en: {} };
+    }
 }
 
 // Language Toggle and Translation Logic
-function initLanguageToggle() {
-    const langToggle = document.getElementById('langToggle');
-    if (!langToggle) return;
+const LanguageManager = {
+    init() {
+        const langToggle = Utils.getElement('#langToggle');
+        if (!langToggle) return;
 
-    langToggle.addEventListener('click', () => {
+        langToggle.addEventListener('click', () => this.toggle());
+    },
+
+    toggle() {
         const currentLang = document.documentElement.lang || 'en';
         const newLang = currentLang === 'en' ? 'ar' : 'en';
-        applyLanguage(newLang);
-    });
+        this.apply(newLang);
+    },
+
+    apply(lang) {
+        const t = AppState.translations[lang];
+        if (!t) return;
+
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        localStorage.setItem('language', lang);
+        AppState.currentLanguage = lang;
+
+        // Update toggle button text
+        const langToggle = Utils.getElement('#langToggle');
+        if (langToggle) {
+            langToggle.textContent = lang === 'en' ? 'AR' : 'EN';
+        }
+
+        // Update all elements with data-t attribute
+        Utils.getElements('[data-t]').forEach(el => {
+            const key = el.getAttribute('data-t');
+            if (t[key]) {
+                if (el.tagName === 'INPUT' && el.type === 'text') {
+                    el.placeholder = t[key];
+                } else {
+                    el.textContent = t[key];
+                }
+            }
+        });
+
+        // Update search placeholder specifically if it exists
+        const searchInput = Utils.getElement('#searchInput');
+        if (searchInput && t.search_placeholder) {
+            searchInput.placeholder = t.search_placeholder;
+        }
+
+        // Update body class for RTL specific styling
+        document.body.classList.toggle('rtl', lang === 'ar');
+
+        // Update PDF download button text
+        const downloadBtn = Utils.getElement('#downloadPdfBtn');
+        if (downloadBtn && t.download_pdf) {
+            downloadBtn.textContent = t.download_pdf;
+        }
+    }
+};
+
+function initLanguageToggle() {
+    LanguageManager.init();
 }
 
 function applyLanguage(lang) {
-    if (!siteTranslations[lang]) return;
-
-    const t = siteTranslations[lang];
-    document.documentElement.lang = lang;
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    localStorage.setItem('language', lang);
-
-    // Update toggle button text
-    const langToggle = document.getElementById('langToggle');
-    if (langToggle) {
-        langToggle.textContent = lang === 'en' ? 'AR' : 'EN';
-    }
-
-    // Update all elements with data-t attribute
-    document.querySelectorAll('[data-t]').forEach(el => {
-        const key = el.getAttribute('data-t');
-        if (t[key]) {
-            if (el.tagName === 'INPUT' && el.type === 'text') {
-                el.placeholder = t[key];
-            } else {
-                el.textContent = t[key];
-            }
-        }
-    });
-
-    // Update search placeholder specifically if it exists
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput && t.search_placeholder) {
-        searchInput.placeholder = t.search_placeholder;
-    }
-
-    // Update body class for RTL specific styling
-    document.body.classList.toggle('rtl', lang === 'ar');
-
-    // Update PDF download button text
-    const downloadBtn = document.getElementById('downloadPdfBtn');
-    if (downloadBtn && t.download_pdf) {
-        downloadBtn.textContent = t.download_pdf;
-    }
+    LanguageManager.apply(lang);
 }
 
 // Mobile Menu Toggle
-function initMobileMenu() {
-    const header = document.querySelector('header .container');
-    const nav = document.querySelector('nav');
+const MobileMenu = {
+    init() {
+        const header = Utils.getElement('header .container');
+        const nav = Utils.getElement('nav');
+        
+        if (!header || !nav) return;
 
-    // Create mobile menu button
-    const menuToggle = document.createElement('button');
-    menuToggle.className = 'mobile-menu-toggle';
-    menuToggle.setAttribute('aria-label', 'Toggle navigation menu');
-    menuToggle.setAttribute('aria-expanded', 'false');
-    menuToggle.innerHTML = `
-        <span></span>
-        <span></span>
-        <span></span>
-    `;
+        // Create mobile menu button
+        this.menuToggle = document.createElement('button');
+        this.menuToggle.className = 'mobile-menu-toggle';
+        this.menuToggle.setAttribute('aria-label', 'Toggle navigation menu');
+        this.menuToggle.setAttribute('aria-expanded', 'false');
+        this.menuToggle.innerHTML = '<span></span><span></span><span></span>';
 
-    header.appendChild(menuToggle);
+        header.appendChild(this.menuToggle);
+        this.nav = nav;
+        this.bindEvents();
+    },
 
-    menuToggle.addEventListener('click', function() {
-        const isExpanded = this.getAttribute('aria-expanded') === 'true';
-        this.setAttribute('aria-expanded', !isExpanded);
-        this.classList.toggle('active');
-        nav.classList.toggle('active');
-        document.body.style.overflow = isExpanded ? '' : 'hidden';
-    });
+    bindEvents() {
+        this.menuToggle.addEventListener('click', () => this.toggle());
 
-    // Close menu when clicking on a link
-    const navLinks = nav.querySelectorAll('a');
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            menuToggle.classList.remove('active');
-            menuToggle.setAttribute('aria-expanded', 'false');
-            nav.classList.remove('active');
-            document.body.style.overflow = '';
+        // Close menu when clicking on a link
+        const navLinks = this.nav.querySelectorAll('a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => this.close());
         });
-    });
 
-    // Close menu when clicking outside
-    document.addEventListener('click', function(e) {
-        if (!nav.contains(e.target) && !menuToggle.contains(e.target) && nav.classList.contains('active')) {
-            menuToggle.classList.remove('active');
-            menuToggle.setAttribute('aria-expanded', 'false');
-            nav.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    });
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!this.nav.contains(e.target) && 
+                !this.menuToggle.contains(e.target) && 
+                this.nav.classList.contains('active')) {
+                this.close();
+            }
+        });
+    },
+
+    toggle() {
+        const isExpanded = this.menuToggle.getAttribute('aria-expanded') === 'true';
+        this.menuToggle.setAttribute('aria-expanded', !isExpanded);
+        this.menuToggle.classList.toggle('active');
+        this.nav.classList.toggle('active');
+        document.body.style.overflow = isExpanded ? '' : 'hidden';
+    },
+
+    close() {
+        this.menuToggle.classList.remove('active');
+        this.menuToggle.setAttribute('aria-expanded', 'false');
+        this.nav.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+};
+
+function initMobileMenu() {
+    MobileMenu.init();
 }
 
 // Enhanced Search with Debouncing
-function initSearch() {
-    const searchInput = document.getElementById('searchInput');
-    if (!searchInput) return;
+const SearchManager = {
+    init() {
+        this.searchInput = Utils.getElement('#searchInput');
+        if (!this.searchInput) return;
 
-    const cardsContainer = document.getElementById('cardsContainer');
-    const cards = document.querySelectorAll('.card');
+        this.cardsContainer = Utils.getElement('#cardsContainer');
+        this.cards = Utils.getElements('.card');
+        this.setupUI();
+        this.bindEvents();
+    },
 
-    // Create search wrapper and icon
-    const searchBox = searchInput.parentElement;
-    searchBox.classList.add('search-wrapper');
+    setupUI() {
+        // Create search wrapper and icon
+        const searchBox = this.searchInput.parentElement;
+        searchBox.classList.add('search-wrapper');
 
-    const searchIcon = document.createElement('span');
-    searchIcon.className = 'search-icon';
-    searchIcon.innerHTML = '🔍';
-    searchBox.insertBefore(searchIcon, searchInput);
+        const searchIcon = document.createElement('span');
+        searchIcon.className = 'search-icon';
+        searchIcon.innerHTML = '🔍';
+        searchBox.insertBefore(searchIcon, this.searchInput);
 
-    // Create clear button
-    const clearBtn = document.createElement('button');
-    clearBtn.className = 'search-clear';
-    clearBtn.innerHTML = '✕';
-    clearBtn.setAttribute('aria-label', 'Clear search');
-    searchBox.appendChild(clearBtn);
+        // Create clear button
+        this.clearBtn = document.createElement('button');
+        this.clearBtn.className = 'search-clear';
+        this.clearBtn.innerHTML = '✕';
+        this.clearBtn.setAttribute('aria-label', 'Clear search');
+        searchBox.appendChild(this.clearBtn);
 
-    // Create no results message
-    const noResults = document.createElement('div');
-    noResults.className = 'no-results';
-    noResults.innerHTML = `
-        <div class="no-results-icon">🔍</div>
-        <h3>No results found</h3>
-        <p>Try adjusting your search terms</p>
-    `;
-    if (cardsContainer) {
-        cardsContainer.after(noResults);
-    }
+        // Create no results message
+        this.noResults = document.createElement('div');
+        this.noResults.className = 'no-results';
+        this.noResults.innerHTML = `
+            <div class="no-results-icon">🔍</div>
+            <h3>No results found</h3>
+            <p>Try adjusting your search terms</p>
+        `;
+        if (this.cardsContainer) {
+            this.cardsContainer.after(this.noResults);
+        }
+    },
 
-    let debounceTimer;
+    bindEvents() {
+        const debouncedSearch = Utils.debounce((query) => this.performSearch(query), 150);
 
-    searchInput.addEventListener('input', function() {
-        clearTimeout(debounceTimer);
-        const query = this.value.toLowerCase().trim();
+        this.searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            this.clearBtn.classList.toggle('visible', query.length > 0);
+            debouncedSearch(query);
+        });
 
-        // Show/hide clear button
-        clearBtn.classList.toggle('visible', query.length > 0);
+        this.clearBtn.addEventListener('click', () => {
+            this.searchInput.value = '';
+            this.searchInput.focus();
+            this.clearBtn.classList.remove('visible');
+            this.performSearch('');
+        });
+    },
 
-        debounceTimer = setTimeout(() => {
-            performSearch(query);
-        }, 150);
-    });
-
-    clearBtn.addEventListener('click', function() {
-        searchInput.value = '';
-        searchInput.focus();
-        clearBtn.classList.remove('visible');
-        performSearch('');
-    });
-
-    function performSearch(query) {
+    performSearch(query) {
         let visibleCount = 0;
 
-        cards.forEach(card => {
+        this.cards.forEach(card => {
             const title = card.getAttribute('data-title') || '';
             const content = card.textContent.toLowerCase();
             const searchableText = (title + ' ' + content).toLowerCase();
@@ -208,211 +265,346 @@ function initSearch() {
         });
 
         // Show/hide no results message
-        if (cardsContainer) {
-            noResults.classList.toggle('visible', visibleCount === 0 && query.length > 0);
+        if (this.cardsContainer) {
+            this.noResults.classList.toggle('visible', visibleCount === 0 && query.length > 0);
         }
         
         // Announce search results to screen readers
         if (query.length > 0) {
-            const lang = document.documentElement.lang || 'en';
-            const message = lang === 'ar' 
-                ? (visibleCount === 0 ? 'لم يتم العثور على نتائج' : `تم العثور على ${visibleCount} نتيجة`)
-                : (visibleCount === 0 ? 'No results found' : `Found ${visibleCount} result${visibleCount !== 1 ? 's' : ''}`);
-            
-            const announcement = document.createElement('div');
-            announcement.setAttribute('role', 'status');
-            announcement.setAttribute('aria-live', 'polite');
-            announcement.className = 'sr-only';
-            announcement.textContent = message;
-            document.body.appendChild(announcement);
-            setTimeout(() => announcement.remove(), 1000);
+            this.announceResults(visibleCount);
         }
+    },
+
+    announceResults(count) {
+        const lang = document.documentElement.lang || 'en';
+        const message = lang === 'ar' 
+            ? (count === 0 ? 'لم يتم العثور على نتائج' : `تم العثور على ${count} نتيجة`)
+            : (count === 0 ? 'No results found' : `Found ${count} result${count !== 1 ? 's' : ''}`);
+        
+        const announcement = document.createElement('div');
+        announcement.setAttribute('role', 'status');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.className = 'sr-only';
+        announcement.textContent = message;
+        document.body.appendChild(announcement);
+        setTimeout(() => announcement.remove(), 1000);
     }
+};
+
+function initSearch() {
+    SearchManager.init();
 }
 
 // PDF Download Handler
-function initPdfDownload() {
-    const downloadBtn = document.getElementById("downloadPdfBtn");
-    if (downloadBtn) {
-        downloadBtn.addEventListener("click", function(e) {
-            e.preventDefault();
-            window.open("/Mobcash_Guide.pdf", "_blank");
-        });
+const PdfDownloader = {
+    init() {
+        this.downloadBtn = Utils.getElement('#downloadPdfBtn');
+        if (this.downloadBtn) {
+            this.downloadBtn.addEventListener('click', (e) => this.handleDownload(e));
+        }
+    },
+
+    handleDownload(e) {
+        e.preventDefault();
+        window.open('/Mobcash_Guide.pdf', '_blank');
     }
+};
+
+function initPdfDownload() {
+    PdfDownloader.init();
 }
 
 // Active Navigation Highlighting
-function initActiveNavigation() {
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    const navLinks = document.querySelectorAll('nav ul li a');
+const NavigationManager = {
+    init() {
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        const navLinks = Utils.getElements('nav ul li a');
 
-    navLinks.forEach(link => {
-        const linkPage = link.getAttribute('href');
-        if (linkPage === currentPage) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
-        }
-    });
+        navLinks.forEach(link => {
+            const linkPage = link.getAttribute('href');
+            link.classList.toggle('active', linkPage === currentPage);
+        });
+    }
+};
+
+function initActiveNavigation() {
+    NavigationManager.init();
 }
 
 // Scroll Effects (Header shadow)
-function initScrollEffects() {
-    const header = document.querySelector('header');
-    let lastScroll = 0;
+const ScrollEffects = {
+    init() {
+        this.header = Utils.getElement('header');
+        this.bindEvents();
+    },
 
-    window.addEventListener('scroll', function() {
+    bindEvents() {
+        window.addEventListener('scroll', () => this.onScroll(), { passive: true });
+    },
+
+    onScroll() {
         const currentScroll = window.pageYOffset;
+        this.header.classList.toggle('scrolled', currentScroll > 10);
+    }
+};
 
-        // Add/remove scrolled class
-        if (currentScroll > 10) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-
-        lastScroll = currentScroll;
-    }, { passive: true });
+function initScrollEffects() {
+    ScrollEffects.init();
 }
 
 // Back to Top Button
-function initBackToTop() {
-    const button = document.createElement('button');
-    button.className = 'back-to-top';
-    button.setAttribute('aria-label', 'Back to top');
-    button.innerHTML = '↑';
-    document.body.appendChild(button);
+const BackToTop = {
+    init() {
+        this.button = document.createElement('button');
+        this.button.className = 'back-to-top';
+        this.button.setAttribute('aria-label', 'Back to top');
+        this.button.innerHTML = '↑';
+        document.body.appendChild(this.button);
 
-    let isVisible = false;
+        this.isVisible = false;
+        this.bindEvents();
+    },
 
-    window.addEventListener('scroll', function() {
+    bindEvents() {
+        window.addEventListener('scroll', () => this.checkVisibility(), { passive: true });
+        this.button.addEventListener('click', () => this.scrollToTop());
+    },
+
+    checkVisibility() {
         const shouldShow = window.pageYOffset > 500;
-
-        if (shouldShow !== isVisible) {
-            isVisible = shouldShow;
-            button.classList.toggle('visible', shouldShow);
+        if (shouldShow !== this.isVisible) {
+            this.isVisible = shouldShow;
+            this.button.classList.toggle('visible', shouldShow);
         }
-    }, { passive: true });
+    },
 
-    button.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
-    });
+    scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+};
+
+function initBackToTop() {
+    BackToTop.init();
 }
 
 // Reading Progress Bar
-function initReadingProgress() {
-    const progressBar = document.createElement('div');
-    progressBar.className = 'reading-progress';
-    document.body.appendChild(progressBar);
+const ReadingProgress = {
+    init() {
+        this.progressBar = document.createElement('div');
+        this.progressBar.className = 'reading-progress';
+        document.body.appendChild(this.progressBar);
+        this.bindEvents();
+    },
 
-    window.addEventListener('scroll', function() {
+    bindEvents() {
+        window.addEventListener('scroll', () => this.update(), { passive: true });
+    },
+
+    update() {
         const scrollTop = window.pageYOffset;
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
         const scrollPercent = (scrollTop / docHeight) * 100;
+        this.progressBar.style.width = scrollPercent + '%';
+    }
+};
 
-        progressBar.style.width = scrollPercent + '%';
-    }, { passive: true });
+function initReadingProgress() {
+    ReadingProgress.init();
 }
 
 // Intersection Observer for Fade-in Animations – with fallback
-function initIntersectionObserver() {
-    const sections = document.querySelectorAll('section, h2, h3');
-    
-    function isElementInViewport(el) {
+const VisibilityObserver = {
+    init() {
+        this.sections = Utils.getElements('section, h2, h3');
+        this.checkInitialVisibility();
+        this.setupObserver();
+    },
+
+    isElementInViewport(el) {
         const rect = el.getBoundingClientRect();
         return (
             rect.top < (window.innerHeight || document.documentElement.clientHeight) &&
             rect.bottom > 0
         );
-    }
-    
-    sections.forEach(section => {
-        if (isElementInViewport(section)) {
-            section.classList.add('visible');
-        }
-    });
-    
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                observer.unobserve(entry.target);
+    },
+
+    checkInitialVisibility() {
+        this.sections.forEach(section => {
+            if (this.isElementInViewport(section)) {
+                section.classList.add('visible');
             }
         });
-    }, observerOptions);
-    
-    sections.forEach(section => {
-        if (!section.classList.contains('visible')) {
-            observer.observe(section);
-        }
-    });
+    },
+
+    setupObserver() {
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        this.sections.forEach(section => {
+            if (!section.classList.contains('visible')) {
+                observer.observe(section);
+            }
+        });
+    }
+};
+
+function initIntersectionObserver() {
+    VisibilityObserver.init();
 }
 
 // Smooth Scroll for Anchor Links
-function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
-
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                e.preventDefault();
-                targetElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
+const SmoothScroll = {
+    init() {
+        const anchors = Utils.getElements('a[href^="#"]');
+        anchors.forEach(anchor => {
+            anchor.addEventListener('click', (e) => this.handleScroll(e));
         });
-    });
+    },
+
+    handleScroll(e) {
+        const targetId = e.currentTarget.getAttribute('href');
+        if (targetId === '#') return;
+
+        const targetElement = Utils.getElement(targetId);
+        if (targetElement) {
+            e.preventDefault();
+            targetElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    }
+};
+
+function initSmoothScroll() {
+    SmoothScroll.init();
 }
 
 // Theme Toggle
-function initThemeToggle() {
-    const toggleButton = document.querySelector('.theme-toggle');
-    if (!toggleButton) return;
+const ThemeManager = {
+    init() {
+        this.toggleButton = Utils.getElement('.theme-toggle');
+        if (!this.toggleButton) return;
 
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-theme');
-        toggleButton.textContent = '☀️';
-    } else if (savedTheme === 'light') {
-        document.body.classList.remove('dark-theme');
-        toggleButton.textContent = '🌙';
-    } else {
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.body.classList.add('dark-theme');
-            toggleButton.textContent = '☀️';
-        }
-    }
+        this.loadSavedTheme();
+        this.bindEvents();
+    },
 
-    toggleButton.addEventListener('click', () => {
-        if (document.body.classList.contains('dark-theme')) {
-            document.body.classList.remove('dark-theme');
-            toggleButton.textContent = '🌙';
-            localStorage.setItem('theme', 'light');
+    loadSavedTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            this.setTheme('dark');
+        } else if (savedTheme === 'light') {
+            this.setTheme('light');
         } else {
-            document.body.classList.add('dark-theme');
-            toggleButton.textContent = '☀️';
-            localStorage.setItem('theme', 'dark');
+            // Check system preference
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                this.setTheme('dark');
+            }
         }
-    });
+    },
+
+    setTheme(theme) {
+        if (theme === 'dark') {
+            document.body.classList.add('dark-theme');
+            this.toggleButton.textContent = '☀️';
+        } else {
+            document.body.classList.remove('dark-theme');
+            this.toggleButton.textContent = '🌙';
+        }
+    },
+
+    bindEvents() {
+        this.toggleButton.addEventListener('click', () => {
+            const isDark = document.body.classList.contains('dark-theme');
+            this.setTheme(isDark ? 'light' : 'dark');
+            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+        });
+    }
+};
+
+function initThemeToggle() {
+    ThemeManager.init();
 }
 
-// Handle visibility change
-document.addEventListener('visibilitychange', function() {
-    if (document.hidden) {
-        document.body.classList.add('tab-hidden');
-    } else {
-        document.body.classList.remove('tab-hidden');
+// Page Visibility Handler - consolidated into single module
+const VisibilityHandler = {
+    init() {
+        document.addEventListener('visibilitychange', () => this.handleVisibilityChange());
+    },
+
+    handleVisibilityChange() {
+        document.body.classList.toggle('tab-hidden', document.hidden);
     }
-});
+};
+
+function initVisibilityHandler() {
+    VisibilityHandler.init();
+}
+
+// Error Handler for graceful error management
+const ErrorHandler = {
+    log(error, context = '') {
+        console.error(`[Error${context ? ` in ${context}` : ''}]`, error);
+    },
+
+    handleAsync(operation, context = '') {
+        return async function(...args) {
+            try {
+                return await operation(...args);
+            } catch (error) {
+                ErrorHandler.log(error, context);
+                throw error;
+            }
+        };
+    }
+};
+
+// Initialize all components
+function initializeApp() {
+    initLanguageToggle();
+    initMobileMenu();
+    initSearch();
+    initActiveNavigation();
+    initScrollEffects();
+    initBackToTop();
+    initReadingProgress();
+    initIntersectionObserver();
+    initSmoothScroll();
+    initThemeToggle();
+    initPdfDownload();
+    initVisibilityHandler();
+}
+
+// Export modules for potential external use (optional)
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = {
+        Utils,
+        AppState,
+        LanguageManager,
+        MobileMenu,
+        SearchManager,
+        PdfDownloader,
+        NavigationManager,
+        ScrollEffects,
+        BackToTop,
+        ReadingProgress,
+        VisibilityObserver,
+        SmoothScroll,
+        ThemeManager,
+        VisibilityHandler,
+        ErrorHandler
+    };
+}
