@@ -1,14 +1,21 @@
 // Modern JavaScript with enhanced UX features and Multi-language support
 'use strict';
 
-// Application state
+// APPLICATION STATE MANAGEMENT
 const AppState = {
     translations: {},
-    currentLanguage: 'en'
+    currentLanguage: 'en',
+    isInitialized: false
 };
 
-// Utility functions
+// Utility functions with JSDoc documentation
 const Utils = {
+    /**
+     * Debounce function to limit rate of execution
+     * @param {Function} func - Function to debounce
+     * @param {number} wait - Wait time in milliseconds
+     * @returns {Function} Debounced function
+     */
     debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -21,12 +28,33 @@ const Utils = {
         };
     },
 
+    /**
+     * Get single element by selector
+     * @param {string} selector - CSS selector
+     * @returns {Element|null} DOM element or null
+     */
     getElement(selector) {
         return document.querySelector(selector);
     },
 
+    /**
+     * Get multiple elements by selector
+     * @param {string} selector - CSS selector
+     * @returns {NodeList} NodeList of elements
+     */
     getElements(selector) {
         return document.querySelectorAll(selector);
+    },
+
+    /**
+     * Safely get nested object property
+     * @param {Object} obj - Object to search
+     * @param {string} path - Dot-separated path
+     * @param {*} defaultValue - Default value if not found
+     * @returns {*} Property value or default
+     */
+    getNestedProperty(obj, path, defaultValue = undefined) {
+        return path.split('.').reduce((current, key) => current?.[key], obj) ?? defaultValue;
     }
 };
 
@@ -43,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 });
 
-// Load translations from JSON file
+// Load translations from JSON file with error handling
 async function loadTranslations() {
     try {
         const response = await fetch('/translations.json');
@@ -55,31 +83,57 @@ async function loadTranslations() {
         // Apply saved language on page load
         const savedLang = localStorage.getItem('language') || 'en';
         applyLanguage(savedLang);
+        
+        // Mark app as ready for translation-dependent features
+        AppState.isInitialized = true;
     } catch (err) {
         ErrorHandler.log(err, 'loadTranslations');
         // Fallback to English if translations fail to load
         AppState.translations = { en: {} };
+        AppState.currentLanguage = 'en';
+        AppState.isInitialized = true;
     }
 }
 
-// Language Toggle and Translation Logic
+// Language Toggle and Translation Logic with full JSDoc
 const LanguageManager = {
+    /**
+     * Initialize language toggle functionality
+     */
     init() {
         const langToggle = Utils.getElement('#langToggle');
         if (!langToggle) return;
 
         langToggle.addEventListener('click', () => this.toggle());
+        
+        // Listen for system language changes
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+                // Re-apply theme if user changes system preference
+                this.apply(AppState.currentLanguage);
+            });
+        }
     },
 
+    /**
+     * Toggle between English and Arabic
+     */
     toggle() {
         const currentLang = document.documentElement.lang || 'en';
         const newLang = currentLang === 'en' ? 'ar' : 'en';
         this.apply(newLang);
     },
 
+    /**
+     * Apply language settings to the page
+     * @param {string} lang - Language code ('en' or 'ar')
+     */
     apply(lang) {
         const t = AppState.translations[lang];
-        if (!t) return;
+        if (!t && lang !== 'en') {
+            ErrorHandler.log(new Error(`Translations not found for language: ${lang}`), 'LanguageManager.apply');
+            return;
+        }
 
         document.documentElement.lang = lang;
         document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -90,23 +144,25 @@ const LanguageManager = {
         const langToggle = Utils.getElement('#langToggle');
         if (langToggle) {
             langToggle.textContent = lang === 'en' ? 'AR' : 'EN';
+            langToggle.setAttribute('aria-label', `Switch to ${lang === 'en' ? 'Arabic' : 'English'}`);
         }
 
         // Update all elements with data-t attribute
         Utils.getElements('[data-t]').forEach(el => {
             const key = el.getAttribute('data-t');
-            if (t[key]) {
+            const translation = t?.[key] || AppState.translations.en?.[key];
+            if (translation) {
                 if (el.tagName === 'INPUT' && el.type === 'text') {
-                    el.placeholder = t[key];
+                    el.placeholder = translation;
                 } else {
-                    el.textContent = t[key];
+                    el.textContent = translation;
                 }
             }
         });
 
         // Update search placeholder specifically if it exists
         const searchInput = Utils.getElement('#searchInput');
-        if (searchInput && t.search_placeholder) {
+        if (searchInput && t?.search_placeholder) {
             searchInput.placeholder = t.search_placeholder;
         }
 
@@ -115,9 +171,27 @@ const LanguageManager = {
 
         // Update PDF download button text
         const downloadBtn = Utils.getElement('#downloadPdfBtn');
-        if (downloadBtn && t.download_pdf) {
+        if (downloadBtn && t?.download_pdf) {
             downloadBtn.textContent = t.download_pdf;
         }
+        
+        // Announce language change to screen readers
+        this.announceLanguageChange(lang);
+    },
+    
+    /**
+     * Announce language change to screen readers
+     * @param {string} lang - Current language
+     */
+    announceLanguageChange(lang) {
+        const message = lang === 'ar' ? 'تم تغيير اللغة إلى العربية' : 'Language changed to English';
+        const announcement = document.createElement('div');
+        announcement.setAttribute('role', 'status');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.className = 'sr-only';
+        announcement.textContent = message;
+        document.body.appendChild(announcement);
+        setTimeout(() => announcement.remove(), 2000);
     }
 };
 
@@ -188,18 +262,25 @@ function initMobileMenu() {
     MobileMenu.init();
 }
 
-// Enhanced Search with Debouncing
+// Enhanced Search with Debouncing and Accessibility
 const SearchManager = {
+    /**
+     * Initialize search functionality
+     */
     init() {
         this.searchInput = Utils.getElement('#searchInput');
         if (!this.searchInput) return;
 
         this.cardsContainer = Utils.getElement('#cardsContainer');
         this.cards = Utils.getElements('.card');
+        this.hasResults = true;
         this.setupUI();
         this.bindEvents();
     },
 
+    /**
+     * Setup search UI elements
+     */
     setupUI() {
         // Create search wrapper and icon
         const searchBox = this.searchInput.parentElement;
@@ -208,6 +289,7 @@ const SearchManager = {
         const searchIcon = document.createElement('span');
         searchIcon.className = 'search-icon';
         searchIcon.innerHTML = '🔍';
+        searchIcon.setAttribute('aria-hidden', 'true');
         searchBox.insertBefore(searchIcon, this.searchInput);
 
         // Create clear button
@@ -215,21 +297,26 @@ const SearchManager = {
         this.clearBtn.className = 'search-clear';
         this.clearBtn.innerHTML = '✕';
         this.clearBtn.setAttribute('aria-label', 'Clear search');
+        this.clearBtn.setAttribute('type', 'button');
         searchBox.appendChild(this.clearBtn);
 
-        // Create no results message
+        // Create no results message with translations
         this.noResults = document.createElement('div');
         this.noResults.className = 'no-results';
+        this.noResults.setAttribute('aria-live', 'polite');
         this.noResults.innerHTML = `
             <div class="no-results-icon">🔍</div>
-            <h3>No results found</h3>
-            <p>Try adjusting your search terms</p>
+            <h3 data-t="no_results_title">No results found</h3>
+            <p data-t="no_results_subtitle">Try adjusting your search terms</p>
         `;
         if (this.cardsContainer) {
             this.cardsContainer.after(this.noResults);
         }
     },
 
+    /**
+     * Bind event listeners
+     */
     bindEvents() {
         const debouncedSearch = Utils.debounce((query) => this.performSearch(query), 150);
 
@@ -245,19 +332,35 @@ const SearchManager = {
             this.clearBtn.classList.remove('visible');
             this.performSearch('');
         });
+
+        // Handle keyboard navigation
+        this.searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.searchInput.value = '';
+                this.clearBtn.classList.remove('visible');
+                this.performSearch('');
+            }
+        });
     },
 
+    /**
+     * Perform search across cards
+     * @param {string} query - Search query
+     */
     performSearch(query) {
         let visibleCount = 0;
+        const lang = document.documentElement.lang || 'en';
 
-        this.cards.forEach(card => {
+        this.cards.forEach((card, index) => {
             const title = card.getAttribute('data-title') || '';
             const content = card.textContent.toLowerCase();
             const searchableText = (title + ' ' + content).toLowerCase();
 
             if (searchableText.includes(query)) {
                 card.style.display = 'block';
-                card.style.animation = 'fadeInUp 0.4s ease forwards';
+                card.style.animation = 'none';
+                card.offsetHeight; // Trigger reflow
+                card.style.animation = `fadeInUp 0.4s ease forwards ${index * 0.05}s`;
                 visibleCount++;
             } else {
                 card.style.display = 'none';
@@ -269,14 +372,21 @@ const SearchManager = {
             this.noResults.classList.toggle('visible', visibleCount === 0 && query.length > 0);
         }
         
+        // Update state
+        this.hasResults = visibleCount > 0;
+        
         // Announce search results to screen readers
         if (query.length > 0) {
-            this.announceResults(visibleCount);
+            this.announceResults(visibleCount, lang);
         }
     },
 
-    announceResults(count) {
-        const lang = document.documentElement.lang || 'en';
+    /**
+     * Announce search results to screen readers
+     * @param {number} count - Number of results
+     * @param {string} lang - Current language
+     */
+    announceResults(count, lang) {
         const message = lang === 'ar' 
             ? (count === 0 ? 'لم يتم العثور على نتائج' : `تم العثور على ${count} نتيجة`)
             : (count === 0 ? 'No results found' : `Found ${count} result${count !== 1 ? 's' : ''}`);
@@ -287,7 +397,7 @@ const SearchManager = {
         announcement.className = 'sr-only';
         announcement.textContent = message;
         document.body.appendChild(announcement);
-        setTimeout(() => announcement.remove(), 1000);
+        setTimeout(() => announcement.remove(), 2000);
     }
 };
 
