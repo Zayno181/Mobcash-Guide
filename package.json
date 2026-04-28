@@ -5,13 +5,25 @@
   "scripts": {
     "build": "npx @11ty/eleventy",
     "start": "npx @11ty/eleventy --serve",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint script.js",
+    "lint:fix": "eslint script.js --fix",
+    "lint:css": "stylelint \"src/assets/css/*.css\"",
+    "lint:css:fix": "stylelint \"src/assets/css/*.css\" --fix",
+    "format": "prettier --write \"**/*.{js,css,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,css,json,md}\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf _site/"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Zayno181/Mobcash-Guide.git"
   },
-  "keywords": [],
+  "keywords": [
+    "1xbet",
+    "agent",
+    "guide",
+    "mobcash"
+  ],
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -21,6 +33,10 @@
   "description": "1xBet Agent Guide - A comprehensive guide for agents.",
   "devDependencies": {
     "@11ty/eleventy": "^3.1.5",
-    "fuse.js": "^7.1.0"
+    "eslint": "^9.39.4",
+    "fuse.js": "^7.1.0",
+    "prettier": "^3.8.3",
+    "stylelint": "^17.9.1",
+    "stylelint-config-recommended": "^18.0.0"
   }
 }

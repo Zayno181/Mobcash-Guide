@@ -1,0 +1,21 @@
+{
+  "singleQuote": true,
+  "tabWidth": 4,
+  "trailingComma": "none",
+  "printWidth": 100,
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": "*.css",
+      "options": {
+        "tabWidth": 4
+      }
+    },
+    {
+      "files": "*.json",
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
+}

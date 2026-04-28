@@ -1,0 +1,21 @@
+{
+  "extends": "stylelint-config-recommended",
+  "rules": {
+    "no-duplicate-selectors": true,
+    "function-url-quotes": "always",
+    "declaration-block-no-duplicate-properties": [
+      true,
+      {
+        "ignore": ["consecutive-duplicates-with-different-values"]
+      }
+    ],
+    "media-feature-range-notation": null,
+    "property-no-deprecated": null,
+    "no-descending-specificity": null,
+    "media-feature-name-value-no-unknown": null
+  },
+  "ignoreFiles": [
+    "**/_site/**",
+    "**/node_modules/**"
+  ]
+}
