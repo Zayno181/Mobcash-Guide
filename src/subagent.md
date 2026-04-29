@@ -1,7 +1,7 @@
 ---
 layout: layout.njk
-title: "Adding a Subagent"
-description: "Complete guide for 1xBet agents: how to add subagents, commission structures, and web management."
+title: 'Adding a Subagent'
+description: 'Complete guide for 1xBet agents: how to add subagents, commission structures, and web management.'
 permalink: /subagent/index.html
 ---
 
@@ -74,6 +74,7 @@ permalink: /subagent/index.html
             <p>Player withdraws $100. Subagent earns Y% → $Y. You take $Y/2, leave $Y/2 to subagent.</p>
         </div>
     </div>
+
 </section>
 
 <section>
@@ -90,4 +91,5 @@ permalink: /subagent/index.html
         <li>Insert the amount</li>
     </ol>
     <img src="/assets/web-management-transfer.png" alt="Web Management transfer interface" class="guide-image">
+
 </section>

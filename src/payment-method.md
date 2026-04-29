@@ -1,15 +1,13 @@
 ---
 layout: layout.njk
-title: "Changing Payment Method"
-description: "Complete guide for 1xBet agents: transactions, social media, account recovery, withdrawals, autoreserve, payment methods, and subagents."
+title: 'Changing Payment Method'
+description: 'Complete guide for 1xBet agents: transactions, social media, account recovery, withdrawals, autoreserve, payment methods, and subagents.'
 permalink: /payment-method/index.html
 ---
 
-        
-        
         <div class="container">
-    
-        
+
+
         <div class="container">
             <h1>6. The process for changing a payment method</h1>
 

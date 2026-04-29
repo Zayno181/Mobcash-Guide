@@ -1,15 +1,21 @@
 // Modern JavaScript with enhanced UX features and Multi-language support
 'use strict';
 
-// APPLICATION STATE MANAGEMENT
+/**
+ * Application state management
+ * @namespace
+ */
 const AppState = {
-    translations: {},
+    translations: Object.freeze({}),
     currentLanguage: 'en',
     isInitialized: false
 };
 
-// Utility functions with JSDoc documentation
-const Utils = {
+/**
+ * Utility functions with JSDoc documentation
+ * @namespace
+ */
+const Utils = Object.freeze({
     /**
      * Debounce function to limit rate of execution
      * @param {Function} func - Function to debounce
@@ -18,13 +24,9 @@ const Utils = {
      */
     debounce(func, wait) {
         let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
+        return (...args) => {
             clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
+            timeout = setTimeout(() => func(...args), wait);
         };
     },
 
@@ -55,41 +57,60 @@ const Utils = {
      */
     getNestedProperty(obj, path, defaultValue = undefined) {
         return path.split('.').reduce((current, key) => current?.[key], obj) ?? defaultValue;
-    }
-};
+    },
 
-document.addEventListener('DOMContentLoaded', function() {
+    /**
+     * Cache DOM queries for performance
+     * @param {string} selector - CSS selector
+     * @param {boolean} multiple - Get multiple elements
+     * @returns {Element|NodeList|null} Cached DOM element(s)
+     */
+    cachedQuery(selector, multiple = false) {
+        const cacheKey = `_${selector.replace(/[^a-zA-Z0-9]/g, '_')}`;
+        if (!this[cacheKey]) {
+            this[cacheKey] = multiple ? this.getElements(selector) : this.getElement(selector);
+        }
+        return this[cacheKey];
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
     // Load translations first, then initialize all components
     loadTranslations()
         .then(() => {
             initializeApp();
         })
-        .catch(error => {
+        .catch((error) => {
             ErrorHandler.log(error, 'initialization');
             // Initialize app even if translations fail
             initializeApp();
         });
 });
 
-// Load translations from JSON file with error handling
+/**
+ * Load translations from JSON file with error handling
+ * @returns {Promise<Object>} Translation data
+ */
 async function loadTranslations() {
     try {
         const response = await fetch('/translations.json');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        AppState.translations = await response.json();
-        
+        const translations = await response.json();
+        // Use Object.assign to update frozen object
+        Object.assign(AppState.translations, translations);
+
         // Apply saved language on page load
         const savedLang = localStorage.getItem('language') || 'en';
         applyLanguage(savedLang);
-        
+
         // Mark app as ready for translation-dependent features
         AppState.isInitialized = true;
     } catch (err) {
         ErrorHandler.log(err, 'loadTranslations');
         // Fallback to English if translations fail to load
-        AppState.translations = { en: {} };
+        Object.assign(AppState.translations, { en: {} });
         AppState.currentLanguage = 'en';
         AppState.isInitialized = true;
     }
@@ -102,10 +123,12 @@ const LanguageManager = {
      */
     init() {
         const langToggle = Utils.getElement('#langToggle');
-        if (!langToggle) return;
+        if (!langToggle) {
+            return;
+        }
 
         langToggle.addEventListener('click', () => this.toggle());
-        
+
         // Listen for system language changes
         if (window.matchMedia) {
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
@@ -131,7 +154,10 @@ const LanguageManager = {
     apply(lang) {
         const t = AppState.translations[lang];
         if (!t && lang !== 'en') {
-            ErrorHandler.log(new Error(`Translations not found for language: ${lang}`), 'LanguageManager.apply');
+            ErrorHandler.log(
+                new Error(`Translations not found for language: ${lang}`),
+                'LanguageManager.apply'
+            );
             return;
         }
 
@@ -144,11 +170,14 @@ const LanguageManager = {
         const langToggle = Utils.getElement('#langToggle');
         if (langToggle) {
             langToggle.textContent = lang === 'en' ? 'AR' : 'EN';
-            langToggle.setAttribute('aria-label', `Switch to ${lang === 'en' ? 'Arabic' : 'English'}`);
+            langToggle.setAttribute(
+                'aria-label',
+                `Switch to ${lang === 'en' ? 'Arabic' : 'English'}`
+            );
         }
 
         // Update all elements with data-t attribute
-        Utils.getElements('[data-t]').forEach(el => {
+        Utils.getElements('[data-t]').forEach((el) => {
             const key = el.getAttribute('data-t');
             const translation = t?.[key] || AppState.translations.en?.[key];
             if (translation) {
@@ -174,17 +203,18 @@ const LanguageManager = {
         if (downloadBtn && t?.download_pdf) {
             downloadBtn.textContent = t.download_pdf;
         }
-        
+
         // Announce language change to screen readers
         this.announceLanguageChange(lang);
     },
-    
+
     /**
      * Announce language change to screen readers
      * @param {string} lang - Current language
      */
     announceLanguageChange(lang) {
-        const message = lang === 'ar' ? 'تم تغيير اللغة إلى العربية' : 'Language changed to English';
+        const message =
+            lang === 'ar' ? 'تم تغيير اللغة إلى العربية' : 'Language changed to English';
         const announcement = document.createElement('div');
         announcement.setAttribute('role', 'status');
         announcement.setAttribute('aria-live', 'polite');
@@ -208,8 +238,10 @@ const MobileMenu = {
     init() {
         const header = Utils.getElement('header .container');
         const nav = Utils.getElement('nav');
-        
-        if (!header || !nav) return;
+
+        if (!header || !nav) {
+            return;
+        }
 
         // Create mobile menu button
         this.menuToggle = document.createElement('button');
@@ -228,15 +260,17 @@ const MobileMenu = {
 
         // Close menu when clicking on a link
         const navLinks = this.nav.querySelectorAll('a');
-        navLinks.forEach(link => {
+        navLinks.forEach((link) => {
             link.addEventListener('click', () => this.close());
         });
 
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {
-            if (!this.nav.contains(e.target) && 
-                !this.menuToggle.contains(e.target) && 
-                this.nav.classList.contains('active')) {
+            if (
+                !this.nav.contains(e.target) &&
+                !this.menuToggle.contains(e.target) &&
+                this.nav.classList.contains('active')
+            ) {
                 this.close();
             }
         });
@@ -269,7 +303,9 @@ const SearchManager = {
      */
     init() {
         this.searchInput = Utils.getElement('#searchInput');
-        if (!this.searchInput) return;
+        if (!this.searchInput) {
+            return;
+        }
 
         this.cardsContainer = Utils.getElement('#cardsContainer');
         this.cards = Utils.getElements('.card');
@@ -371,10 +407,10 @@ const SearchManager = {
         if (this.cardsContainer) {
             this.noResults.classList.toggle('visible', visibleCount === 0 && query.length > 0);
         }
-        
+
         // Update state
         this.hasResults = visibleCount > 0;
-        
+
         // Announce search results to screen readers
         if (query.length > 0) {
             this.announceResults(visibleCount, lang);
@@ -387,10 +423,15 @@ const SearchManager = {
      * @param {string} lang - Current language
      */
     announceResults(count, lang) {
-        const message = lang === 'ar' 
-            ? (count === 0 ? 'لم يتم العثور على نتائج' : `تم العثور على ${count} نتيجة`)
-            : (count === 0 ? 'No results found' : `Found ${count} result${count !== 1 ? 's' : ''}`);
-        
+        const message =
+            lang === 'ar'
+                ? count === 0
+                    ? 'لم يتم العثور على نتائج'
+                    : `تم العثور على ${count} نتيجة`
+                : count === 0
+                  ? 'No results found'
+                  : `Found ${count} result${count !== 1 ? 's' : ''}`;
+
         const announcement = document.createElement('div');
         announcement.setAttribute('role', 'status');
         announcement.setAttribute('aria-live', 'polite');
@@ -430,7 +471,7 @@ const NavigationManager = {
         const currentPage = window.location.pathname.split('/').pop() || 'index.html';
         const navLinks = Utils.getElements('nav ul li a');
 
-        navLinks.forEach(link => {
+        navLinks.forEach((link) => {
             const linkPage = link.getAttribute('href');
             link.classList.toggle('active', linkPage === currentPage);
         });
@@ -539,7 +580,7 @@ const VisibilityObserver = {
     },
 
     checkInitialVisibility() {
-        this.sections.forEach(section => {
+        this.sections.forEach((section) => {
             if (this.isElementInViewport(section)) {
                 section.classList.add('visible');
             }
@@ -554,7 +595,7 @@ const VisibilityObserver = {
         };
 
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
+            entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('visible');
                     observer.unobserve(entry.target);
@@ -562,7 +603,7 @@ const VisibilityObserver = {
             });
         }, observerOptions);
 
-        this.sections.forEach(section => {
+        this.sections.forEach((section) => {
             if (!section.classList.contains('visible')) {
                 observer.observe(section);
             }
@@ -578,14 +619,16 @@ function initIntersectionObserver() {
 const SmoothScroll = {
     init() {
         const anchors = Utils.getElements('a[href^="#"]');
-        anchors.forEach(anchor => {
+        anchors.forEach((anchor) => {
             anchor.addEventListener('click', (e) => this.handleScroll(e));
         });
     },
 
     handleScroll(e) {
         const targetId = e.currentTarget.getAttribute('href');
-        if (targetId === '#') return;
+        if (targetId === '#') {
+            return;
+        }
 
         const targetElement = Utils.getElement(targetId);
         if (targetElement) {
@@ -606,7 +649,9 @@ function initSmoothScroll() {
 const ThemeManager = {
     init() {
         this.toggleButton = Utils.getElement('.theme-toggle');
-        if (!this.toggleButton) return;
+        if (!this.toggleButton) {
+            return;
+        }
 
         this.loadSavedTheme();
         this.bindEvents();
@@ -671,7 +716,7 @@ const ErrorHandler = {
     },
 
     handleAsync(operation, context = '') {
-        return async function(...args) {
+        return async function (...args) {
             try {
                 return await operation(...args);
             } catch (error) {
