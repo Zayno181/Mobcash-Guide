@@ -1,7 +1,7 @@
 ---
 layout: layout.njk
-title: "Home"
-description: "Home - Complete guide for 1xBet agents: transactions, social media, account recovery, withdrawals, autoreserve, payment methods, and subagents."
+title: 'Home'
+description: 'Home - Complete guide for 1xBet agents: transactions, social media, account recovery, withdrawals, autoreserve, payment methods, and subagents.'
 bodyClass: home-page
 ---
 

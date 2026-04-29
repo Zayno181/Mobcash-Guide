@@ -15,12 +15,27 @@ from typing import Optional
 
 from weasyprint import HTML, CSS
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+
+class LoggingConfig:
+    """Manages logging configuration for the application."""
+    
+    @staticmethod
+    def setup(verbose: bool = False) -> logging.Logger:
+        """Configure logging with appropriate level.
+        
+        Args:
+            verbose: Enable debug level logging if True.
+            
+        Returns:
+            Configured logger instance.
+        """
+        level = logging.DEBUG if verbose else logging.INFO
+        logging.basicConfig(
+            level=level,
+            format='%(asctime)s - %(levelname)s - %(message)s',
+            datefmt='%Y-%m-%d %H:%M:%S'
+        )
+        return logging.getLogger(__name__)
 
 
 class PDFGenerator:
@@ -29,6 +44,7 @@ class PDFGenerator:
     Attributes:
         base_dir: Base directory for resolving relative paths.
     """
+    __slots__ = ('base_dir',)
 
     def __init__(self, base_dir: Optional[str] = None) -> None:
         """Initialize the PDF generator.
@@ -62,31 +78,47 @@ class PDFGenerator:
             output_file = self.base_dir / output_path
 
             if not html_file.exists():
-                logger.error(f"HTML file not found at {html_file}")
+                logging.error(f"HTML file not found at {html_file}")
                 raise FileNotFoundError(f"HTML file not found: {html_file}")
 
-            logger.info(f"Loading HTML from {html_file}")
+            logging.info(f"Loading HTML from {html_file}")
+            
+            # Pre-validate output directory exists
+            output_file.parent.mkdir(parents=True, exist_ok=True)
+            
             html = HTML(filename=str(html_file))
-            stylesheets = []
+            stylesheets = self._load_stylesheets(css_path)
 
-            if css_path:
-                css_file = self.base_dir / css_path
-                if css_file.exists():
-                    logger.info(f"Applying CSS from {css_file}")
-                    stylesheets.append(CSS(filename=str(css_file)))
-                else:
-                    logger.warning(f"CSS file not found at {css_file}. Proceeding without it.")
-
-            logger.info(f"Generating PDF at {output_file}")
+            logging.info(f"Generating PDF at {output_file}")
             html.write_pdf(str(output_file), stylesheets=stylesheets)
-            logger.info(f"PDF generated successfully at {output_file}")
+            logging.info(f"PDF generated successfully at {output_file}")
             return True
 
         except FileNotFoundError:
             raise
         except Exception as e:
-            logger.error(f"PDF generation failed: {e}", exc_info=True)
+            logging.error(f"PDF generation failed: {e}", exc_info=True)
             return False
+    
+    def _load_stylesheets(self, css_path: Optional[str]) -> list[CSS]:
+        """Load CSS stylesheets if provided.
+        
+        Args:
+            css_path: Optional path to CSS file.
+            
+        Returns:
+            List of CSS objects.
+        """
+        if not css_path:
+            return []
+        
+        css_file = self.base_dir / css_path
+        if css_file.exists():
+            logging.info(f"Applying CSS from {css_file}")
+            return [CSS(filename=str(css_file))]
+        else:
+            logging.warning(f"CSS file not found at {css_file}. Proceeding without it.")
+            return []
 
 
 def parse_arguments() -> argparse.Namespace:
@@ -144,18 +176,21 @@ def main() -> int:
     """
     args = parse_arguments()
     
-    if args.verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
+    # Setup logging with verbose option
+    LoggingConfig.setup(verbose=args.verbose)
     
     generator = PDFGenerator()
     
-    success = generator.generate(
-        html_path=args.input,
-        output_path=args.output,
-        css_path=args.css
-    )
-    
-    return 0 if success else 1
+    try:
+        success = generator.generate(
+            html_path=args.input,
+            output_path=args.output,
+            css_path=args.css
+        )
+        return 0 if success else 1
+    except FileNotFoundError as e:
+        logging.error(f"Fatal error: {e}")
+        return 1
 
 
 if __name__ == "__main__":

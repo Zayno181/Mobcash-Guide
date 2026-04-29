@@ -2,8 +2,22 @@
 
 import pytest
 from pathlib import Path
-from unittest.mock import Mock, patch, MagicMock
-from generate_pdf import PDFGenerator
+from unittest.mock import Mock, patch, MagicMock, call
+from generate_pdf import PDFGenerator, LoggingConfig
+
+
+class TestLoggingConfig:
+    """Test cases for LoggingConfig class."""
+    
+    def test_setup_info_level(self, caplog):
+        """Test logging setup with INFO level."""
+        logger = LoggingConfig.setup(verbose=False)
+        assert logger is not None
+        
+    def test_setup_debug_level(self, caplog):
+        """Test logging setup with DEBUG level."""
+        logger = LoggingConfig.setup(verbose=True)
+        assert logger is not None
 
 
 class TestPDFGenerator:
@@ -42,6 +56,7 @@ class TestPDFGenerator:
         assert result is True
         mock_html.assert_called_once()
         mock_html_instance.write_pdf.assert_called_once()
+        mock_css.assert_called_once()
 
     @patch.object(Path, 'exists')
     def test_generate_html_not_found(self, mock_exists):
@@ -56,7 +71,7 @@ class TestPDFGenerator:
 
     @patch('generate_pdf.HTML')
     @patch.object(Path, 'exists', side_effect=[True, False])
-    def test_generate_css_not_found_warning(self, mock_exists, mock_html):
+    def test_generate_css_not_found_warning(self, mock_exists, mock_html, caplog):
         """Test that missing CSS file logs warning but continues."""
         mock_html_instance = Mock()
         mock_html.return_value = mock_html_instance
@@ -68,6 +83,7 @@ class TestPDFGenerator:
         )
         
         assert result is True
+        assert "CSS file not found" in caplog.text
         mock_html_instance.write_pdf.assert_called_once()
 
     @patch('generate_pdf.HTML')
@@ -84,10 +100,33 @@ class TestPDFGenerator:
         )
         
         assert result is True
-        # CSS should not be instantiated
-        from weasyprint import CSS
-        # Verify write_pdf was called with empty stylesheets
+        # Verify write_pdf was called with empty stylesheets list
         mock_html_instance.write_pdf.assert_called_once()
+        call_args = mock_html_instance.write_pdf.call_args
+        assert call_args[1]['stylesheets'] == []
+
+    @patch('generate_pdf.HTML')
+    @patch('generate_pdf.CSS')
+    @patch.object(Path, 'exists', return_value=True)
+    def test_load_stylesheets_returns_list(self, mock_exists, mock_css, mock_html):
+        """Test that _load_stylesheets returns a list."""
+        mock_css_instance = Mock()
+        mock_css.return_value = mock_css_instance
+        
+        result = self.generator._load_stylesheets("styles.css")
+        
+        assert isinstance(result, list)
+        assert len(result) == 1
+
+    def test_load_stylesheets_no_css_path(self):
+        """Test _load_stylesheets with None path."""
+        result = self.generator._load_stylesheets(None)
+        assert result == []
+        
+    def test_load_stylesheets_empty_string(self):
+        """Test _load_stylesheets with empty string."""
+        result = self.generator._load_stylesheets("")
+        assert result == []
 
 
 if __name__ == "__main__":

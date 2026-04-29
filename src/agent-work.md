@@ -1,7 +1,7 @@
 ---
 layout: layout.njk
-title: "Working as an Agent"
-description: "Complete guide for 1xBet agents: transactions, MobCash app, device activation, and limits."
+title: 'Working as an Agent'
+description: 'Complete guide for 1xBet agents: transactions, MobCash app, device activation, and limits.'
 permalink: /agent-work/index.html
 ---
 
