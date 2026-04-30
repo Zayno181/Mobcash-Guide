@@ -72,11 +72,13 @@
 
 /* Footer */
 footer {
-    background: var(--footer-bg);
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
     color: var(--text-secondary);
     padding: 3rem 0 2rem;
     margin-top: 4rem;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--glass-border);
 }
 
 footer .container {
@@ -99,18 +101,21 @@ footer a:hover {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white !important;
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--radius-sm);
+    padding: 0.875rem 1.75rem;
+    border-radius: var(--radius-full);
     text-decoration: none;
     transition: all var(--transition-normal);
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .download-link:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(26, 115, 232, 0.4);
     text-decoration: none !important;
 }
 
@@ -119,18 +124,20 @@ footer a:hover {
     position: fixed;
     bottom: 2rem;
     right: 2rem;
-    width: 48px;
-    height: 48px;
-    background: var(--primary);
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
     color: white;
-    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
-    box-shadow: var(--shadow-lg);
+    box-shadow: 0 4px 20px rgba(26, 115, 232, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     opacity: 0;
     visibility: hidden;
     transform: translateY(20px);
@@ -145,9 +152,9 @@ footer a:hover {
 }
 
 .back-to-top:hover {
-    background: var(--primary-dark);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-xl);
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(26, 115, 232, 0.5);
 }
 
 /* Progress Bar */
