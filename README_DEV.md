@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - Python 3.9+
 - pip (Python package manager)
 

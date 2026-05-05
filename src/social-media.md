@@ -1,15 +1,13 @@
 ---
 layout: layout.njk
-title: "Social Media Strategies"
-description: "Complete guide for 1xBet agents: transactions, social media, account recovery, withdrawals, autoreserve, payment methods, and subagents."
+title: 'Social Media Strategies'
+description: 'Complete guide for 1xBet agents: transactions, social media, account recovery, withdrawals, autoreserve, payment methods, and subagents.'
 permalink: /social-media/index.html
 ---
 
-        
-        
         <div class="container">
-    
-        
+
+
         <div class="container">
             <h1>2. The importance of using social media to attract new players & grow the agent base</h1>
             <p>Social media has become one of the strongest tools for 1xBet agents to expand their player network, increase deposits, and grow overall performance.</p>

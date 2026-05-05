@@ -1,15 +1,13 @@
 ---
 layout: layout.njk
-title: "Reddy Account Recovery"
-description: "Complete guide for 1xBet agents: transactions, social media, account recovery, withdrawals, autoreserve, payment methods, and subagents."
+title: 'Reddy Account Recovery'
+description: 'Complete guide for 1xBet agents: transactions, social media, account recovery, withdrawals, autoreserve, payment methods, and subagents.'
 permalink: /account-recovery/index.html
 ---
 
-        
-        
         <div class="container">
-    
-        
+
+
         <div class="container">
             <h1>3. Steps to recover a Reddy account</h1>
 

@@ -1,0 +1,36 @@
+/**
+ * MobCash Guide - Main Stylesheet
+ * 
+ * This file imports all modular CSS files in the correct order.
+ * DO NOT add custom styles here - create/edit module files instead.
+ * 
+ * Modules:
+ * 1. base.css       - Reset, CSS variables, global styles
+ * 2. header.css     - Header, navigation, mobile menu
+ * 3. content.css    - Main content, hero, cards, typography
+ * 4. components.css - FAQ, glossary, footer, buttons
+ * 5. animations.css - Keyframe animations
+ * 6. responsive.css - Media queries and responsive design
+ * 7. rtl.css        - Right-to-left language support
+ */
+
+/* 1. Base Styles & Reset */
+@import url('base.css');
+
+/* 2. Header & Navigation */
+@import url('header.css');
+
+/* 3. Main Content */
+@import url('content.css');
+
+/* 4. Components */
+@import url('components.css');
+
+/* 5. Animations */
+@import url('animations.css');
+
+/* 6. Responsive Design */
+@import url('responsive.css');
+
+/* 7. RTL Support */
+@import url('rtl.css');

@@ -1,15 +1,13 @@
 ---
 layout: layout.njk
-title: "Autoreserve Setup"
-description: "Complete guide for 1xBet agents: transactions, social media, account recovery, withdrawals, autoreserve, payment methods, and subagents."
+title: 'Autoreserve Setup'
+description: 'Complete guide for 1xBet agents: transactions, social media, account recovery, withdrawals, autoreserve, payment methods, and subagents.'
 permalink: /autoreserve/index.html
 ---
 
-        
-        
         <div class="container">
-    
-        
+
+
         <div class="container">
             <h1>5. Instructions on how to set up an autoreserve</h1>
             <ol>
