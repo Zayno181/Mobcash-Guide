@@ -96,8 +96,14 @@ class PDFGenerator:
 
         except FileNotFoundError:
             raise
+        except PermissionError as e:
+            logging.error(f"Permission denied: {output_file}")
+            return False
+        except IOError as e:
+            logging.error(f"IO error during PDF generation: {e}")
+            return False
         except Exception as e:
-            logging.error(f"PDF generation failed: {e}", exc_info=True)
+            logging.error(f"Unexpected error during PDF generation: {type(e).__name__}: {e}", exc_info=True)
             return False
     
     def _load_stylesheets(self, css_path: Optional[str]) -> list[CSS]:

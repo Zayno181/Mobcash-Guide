@@ -101,9 +101,11 @@ async function loadTranslations() {
         // Use Object.assign to update frozen object
         Object.assign(AppState.translations, translations);
 
-        // Apply saved language on page load
-        const savedLang = localStorage.getItem('language') || 'en';
-        applyLanguage(savedLang);
+        // Apply saved language on page load with validation
+        const savedLang = localStorage.getItem('language');
+        const validLanguages = ['en', 'ar'];
+        const lang = validLanguages.includes(savedLang) ? savedLang : 'en';
+        applyLanguage(lang);
 
         // Mark app as ready for translation-dependent features
         AppState.isInitialized = true;
@@ -248,7 +250,11 @@ const MobileMenu = {
         this.menuToggle.className = 'mobile-menu-toggle';
         this.menuToggle.setAttribute('aria-label', 'Toggle navigation menu');
         this.menuToggle.setAttribute('aria-expanded', 'false');
-        this.menuToggle.innerHTML = '<span></span><span></span><span></span>';
+        // Create spans safely using DOM methods
+        for (let i = 0; i < 3; i++) {
+            const span = document.createElement('span');
+            this.menuToggle.appendChild(span);
+        }
 
         header.appendChild(this.menuToggle);
         this.nav = nav;
@@ -324,14 +330,14 @@ const SearchManager = {
 
         const searchIcon = document.createElement('span');
         searchIcon.className = 'search-icon';
-        searchIcon.innerHTML = '🔍';
+        searchIcon.textContent = '🔍';
         searchIcon.setAttribute('aria-hidden', 'true');
         searchBox.insertBefore(searchIcon, this.searchInput);
 
         // Create clear button
         this.clearBtn = document.createElement('button');
         this.clearBtn.className = 'search-clear';
-        this.clearBtn.innerHTML = '✕';
+        this.clearBtn.textContent = '✕';
         this.clearBtn.setAttribute('aria-label', 'Clear search');
         this.clearBtn.setAttribute('type', 'button');
         searchBox.appendChild(this.clearBtn);
@@ -340,11 +346,21 @@ const SearchManager = {
         this.noResults = document.createElement('div');
         this.noResults.className = 'no-results';
         this.noResults.setAttribute('aria-live', 'polite');
-        this.noResults.innerHTML = `
-            <div class="no-results-icon">🔍</div>
-            <h3 data-t="no_results_title">No results found</h3>
-            <p data-t="no_results_subtitle">Try adjusting your search terms</p>
-        `;
+        // Build no results content safely using DOM methods
+        const iconDiv = document.createElement('div');
+        iconDiv.className = 'no-results-icon';
+        iconDiv.textContent = '🔍';
+        this.noResults.appendChild(iconDiv);
+        
+        const titleH3 = document.createElement('h3');
+        titleH3.setAttribute('data-t', 'no_results_title');
+        titleH3.textContent = 'No results found';
+        this.noResults.appendChild(titleH3);
+        
+        const subtitleP = document.createElement('p');
+        subtitleP.setAttribute('data-t', 'no_results_subtitle');
+        subtitleP.textContent = 'Try adjusting your search terms';
+        this.noResults.appendChild(subtitleP);
         if (this.cardsContainer) {
             this.cardsContainer.after(this.noResults);
         }
@@ -384,6 +400,16 @@ const SearchManager = {
      * @param {string} query - Search query
      */
     performSearch(query) {
+        // Limit query length to prevent performance issues
+        const MAX_QUERY_LENGTH = 100;
+        const sanitizedQuery = query.slice(0, MAX_QUERY_LENGTH).toLowerCase().trim();
+        
+        // Skip search if empty or too short
+        if (sanitizedQuery.length === 0) {
+            this.resetSearch();
+            return;
+        }
+        
         let visibleCount = 0;
         const lang = document.documentElement.lang || 'en';
 
@@ -392,7 +418,7 @@ const SearchManager = {
             const content = card.textContent.toLowerCase();
             const searchableText = (title + ' ' + content).toLowerCase();
 
-            if (searchableText.includes(query)) {
+            if (searchableText.includes(sanitizedQuery)) {
                 card.style.display = 'block';
                 card.style.animation = 'none';
                 card.offsetHeight; // Trigger reflow
@@ -405,14 +431,14 @@ const SearchManager = {
 
         // Show/hide no results message
         if (this.cardsContainer) {
-            this.noResults.classList.toggle('visible', visibleCount === 0 && query.length > 0);
+            this.noResults.classList.toggle('visible', visibleCount === 0 && sanitizedQuery.length > 0);
         }
 
         // Update state
         this.hasResults = visibleCount > 0;
 
         // Announce search results to screen readers
-        if (query.length > 0) {
+        if (sanitizedQuery.length > 0) {
             this.announceResults(visibleCount, lang);
         }
     },
@@ -457,7 +483,15 @@ const PdfDownloader = {
 
     handleDownload(e) {
         e.preventDefault();
-        window.open('/Mobcash_Guide.pdf', '_blank');
+        // Secure PDF download using anchor element with security attributes
+        const link = document.createElement('a');
+        link.href = '/Mobcash_Guide.pdf';
+        link.download = 'Mobcash_Guide.pdf';
+        link.rel = 'noopener noreferrer';
+        link.target = '_blank';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 };
 
@@ -509,7 +543,7 @@ const BackToTop = {
         this.button = document.createElement('button');
         this.button.className = 'back-to-top';
         this.button.setAttribute('aria-label', 'Back to top');
-        this.button.innerHTML = '↑';
+        this.button.textContent = '↑';
         document.body.appendChild(this.button);
 
         this.isVisible = false;
@@ -659,6 +693,8 @@ const ThemeManager = {
 
     loadSavedTheme() {
         const savedTheme = localStorage.getItem('theme');
+        // Validate theme value to prevent injection
+        const validThemes = ['light', 'dark'];
         if (savedTheme === 'dark') {
             this.setTheme('dark');
         } else if (savedTheme === 'light') {
@@ -672,6 +708,10 @@ const ThemeManager = {
     },
 
     setTheme(theme) {
+        // Validate theme parameter
+        if (!['light', 'dark'].includes(theme)) {
+            theme = 'light';
+        }
         if (theme === 'dark') {
             document.body.classList.add('dark-theme');
             this.toggleButton.textContent = '☀️';
@@ -684,8 +724,9 @@ const ThemeManager = {
     bindEvents() {
         this.toggleButton.addEventListener('click', () => {
             const isDark = document.body.classList.contains('dark-theme');
-            this.setTheme(isDark ? 'light' : 'dark');
-            localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            const newTheme = isDark ? 'light' : 'dark';
+            this.setTheme(newTheme);
+            localStorage.setItem('theme', newTheme);
         });
     }
 };
