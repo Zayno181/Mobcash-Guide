@@ -101,21 +101,21 @@ footer a:hover {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white !important;
     padding: 0.875rem 1.75rem;
     border-radius: var(--radius-full);
     text-decoration: none;
     transition: all var(--transition-normal);
     font-weight: 600;
-    box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .download-link:hover {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    background: linear-gradient(135deg, #764ba2, #667eea);
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(26, 115, 232, 0.4);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
     text-decoration: none !important;
 }
 
@@ -126,7 +126,7 @@ footer a:hover {
     right: 2rem;
     width: 56px;
     height: 56px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    background: linear-gradient(135deg, #667eea, #764ba2);
     color: white;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
@@ -135,7 +135,7 @@ footer a:hover {
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
-    box-shadow: 0 4px 20px rgba(26, 115, 232, 0.4);
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     opacity: 0;
@@ -152,9 +152,9 @@ footer a:hover {
 }
 
 .back-to-top:hover {
-    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    background: linear-gradient(135deg, #764ba2, #667eea);
     transform: translateY(-6px) scale(1.05);
-    box-shadow: 0 8px 30px rgba(26, 115, 232, 0.5);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
 }
 
 /* Progress Bar */
@@ -164,7 +164,7 @@ footer a:hover {
     left: 0;
     width: 0%;
     height: 3px;
-    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    background: linear-gradient(90deg, #667eea, #764ba2);
     z-index: 1001;
     transition: width 0.1s;
 }
